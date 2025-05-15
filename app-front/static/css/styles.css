@@ -30,3 +30,6 @@
     font-size: 25px;
     width: 400px;
 }
+.input-group-custom input::placeholder {
+    color: #7f7f7f;
+}
