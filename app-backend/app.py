@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
-import json
-from torchvision import models
 from flask import Flask
+from facenet_pytorch import InceptionResnetV1
 
 app = Flask(__name__)
-model = models.resnet50(weights='IMAGENET1K_V2')
-model.eval()
 
-FILENAME_IMAGENET_CLASSES = 'imagenet_class_index.json'
-
-imagenet_class_index = json.load(open(FILENAME_IMAGENET_CLASSES))
+# Cargar modelo VGGFace2 (ej. InceptionResnetV1 preentrenado)
+model = InceptionResnetV1(pretrained='vggface2').eval()
