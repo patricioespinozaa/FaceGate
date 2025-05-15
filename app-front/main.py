@@ -7,7 +7,7 @@ from flask import request, redirect, url_for, render_template
 
 @app.route('/Facegate/')
 def index_form():
-    return render_template('index.html')
+    return render_template('base.html')
 
 
 if __name__ == "__main__":
