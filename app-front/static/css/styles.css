@@ -4,3 +4,29 @@
     margin-left: 1rem;
     margin-right: 1rem;
 }
+
+.body {
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.welcome-container {
+    padding: 25px;
+    font-size: 25px;
+}
+
+.input-group-custom {
+    font-size: 25px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.input-group-custom input {
+    background-color: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 4px 15px;
+    font-size: 25px;
+    width: 400px;
+}
