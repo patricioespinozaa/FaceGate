@@ -1,5 +1,3 @@
-
-
 # -*- coding: utf-8 -*-
 from app import app
 from utils import get_prediction
@@ -10,6 +8,8 @@ AUTH_SECRET = "piagrupo3"
 
 @app.route('/facegate/app-ia/predict', methods=['POST']) # Cambiado
 def predict():
+    # Simulación de conexión a la base de datos
+    # db = connect_to_database()
     # Obtener RUT
     
     # Extraer imagen de la DB de acuerdo al RUT

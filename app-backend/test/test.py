@@ -1,13 +1,16 @@
 from pathlib import Path
 from facenet_pytorch import InceptionResnetV1
 import torch
+import os
+import sys
 
 # Funciones auxiliares
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils import get_embedding, cosine_distance, euclidean_distance
 
 # Rutas de imágenes
-img1_path = 'persona1.jpg'
-img2_path = 'persona2.jpg'
+img1_path = 'test/src/20918356-0.jpg'
+img2_path = 'test/src/Foto_Patricio.jpg'
 
 # Leer imágenes como bytes
 img1_bytes = Path(img1_path).read_bytes()
