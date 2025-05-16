@@ -86,7 +86,7 @@ def predict():
 
     # Entregar una respuesta JSON al frontend con el resultado de la comparación, indicando el RUT y nombre de la persona.
     # 1. Si la distancia es menor a 0.5, se considera que son la misma persona
-    if distancia_euclidiana <= 1.0:
+    if distancia_coseno <= 0.5:
         json_respuesta = {
             "status": "success",
             "message": "Acceso permitido",
@@ -100,7 +100,7 @@ def predict():
         return jsonify(json_respuesta)
 
     # 2. Si la distancia es mayor a 0.5, se considera que son personas distintas
-    if distancia_euclidiana > 1.0:
+    if distancia_coseno > 0.5:
         json_respuesta = {
             "status": "error",
             "message": "Acceso denegado",

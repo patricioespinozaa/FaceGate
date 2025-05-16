@@ -1,20 +1,15 @@
 import requests
 import sys
 import os
-from main import port
 
 # Añadir el directorio raíz del proyecto al path para importar módulos
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(root_dir)
 
-# Construir ruta absoluta al archivo de imagen
-image_path = os.path.abspath(os.path.join(root_dir, 'test', 'src', 'Foto_Patricio.jpg'))
+from main import port
 
 # URL base del endpoint
 url = f"http://localhost:{port}/facegate/app-ia/predict"
-
-# Datos para enviar junto con la imagen
-data = {'rut': '20918356-0'}
 
 def post_image_and_get_response(image_path, data):
     with open(image_path, 'rb') as img_file:
@@ -25,19 +20,19 @@ def post_image_and_get_response(image_path, data):
 def assert_response(expected, actual):
     assert expected['status'] == actual['status'], f"Expected status '{expected['status']}', got '{actual['status']}'"
     assert expected['message'] == actual['message'], f"Expected message '{expected['message']}', got '{actual['message']}'"
-    # Comparar campos de data solo si existen para evitar errores si data es None o vacío
+
+    # Comparar campos de data, excluyendo distancias
+    excluded_keys = {'distancia_coseno', 'distancia_euclidiana'}
     expected_data = expected.get('data', {})
     actual_data = actual.get('data', {})
-    for key in expected_data:
-        assert expected_data[key] == actual_data.get(key), f"Expected data[{key}]='{expected_data[key]}', got '{actual_data.get(key)}'"
 
-# Ejecutar petición
-response_json = post_image_and_get_response(image_path, data)
-print(response_json)
+    for key in expected_data:
+        if key not in excluded_keys:
+            assert expected_data[key] == actual_data.get(key), f"Expected data[{key}]='{expected_data[key]}', got '{actual_data.get(key)}'"
 
 # Definición de casos de prueba
 test_cases = {
-    "positivo": {
+    "acceso_permitido": {
         'expected': {
             'status': 'success',
             'message': 'Acceso permitido',
@@ -61,7 +56,7 @@ test_cases = {
             }
         }
     },
-    "distancia_mayor_1": {
+    "acceso_denegado": {
         'expected': {
             'status': 'error',
             'message': 'Acceso denegado',
@@ -87,6 +82,25 @@ test_cases = {
     }
 }
 
-# Ejemplo de cómo usar los casos de prueba para validar respuestas (modificar según contexto real)
-# Aquí solo validamos el test positivo contra la respuesta recibida
-assert_response(test_cases["positivo"]['expected'], response_json)
+# Tests
+image_path = os.path.abspath(os.path.join(root_dir, 'test', 'src', 'Foto_Patricio.jpg'))
+data = {'rut': '20918356-0'}
+response_json = post_image_and_get_response(image_path, data)
+assert_response(test_cases["acceso_permitido"]['expected'], response_json)
+
+image_path = os.path.abspath(os.path.join(root_dir, 'test', 'src', 'Foto_Patricio.jpg'))
+data = {'rut': '12345678-9'}
+response_json = post_image_and_get_response(image_path, data)
+assert_response(test_cases["rut_no_encontrado"]['expected'], response_json)
+
+data = {'rut': '20918356-0'}
+image_path = os.path.abspath(os.path.join(root_dir, 'test', 'src', '20625224-3.jpg'))
+response_json = post_image_and_get_response(image_path, data)
+assert_response(test_cases["acceso_denegado"]['expected'], response_json)
+
+data = {'rut': '20918356-0'}
+image_path = os.path.abspath(os.path.join(root_dir, 'test', 'src', 'roku.jpg'))
+response_json = post_image_and_get_response(image_path, data)
+assert_response(test_cases["rostro_no_detectado"]['expected'], response_json)
+
+print("Todos los tests han pasado correctamente.")
