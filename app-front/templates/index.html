@@ -9,6 +9,7 @@
         <label for="rut">Digita tu rut:</label>
         <input type="text" id="rut" placeholder="Ingresa tu rut">
     </div>
+    <div id="rut-message" class="rut-message" style="display: none;"></div>
 </div>
 
 <!--Cámara y Ucampus-->
@@ -54,4 +55,11 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+
+{% block scripts %}
+
+<script src="{{ url_for('static', filename='js/rut_sender.js') }}"></script>
+
 {% endblock %}
