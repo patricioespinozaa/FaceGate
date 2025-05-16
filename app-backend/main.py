@@ -1,0 +1,119 @@
+# -*- coding: utf-8 -*-
+from app import app
+from flask import Flask, jsonify, request
+import pandas as pd
+import time
+
+from utils import get_embedding, cosine_distance, euclidean_distance
+import os
+
+# Puerto para la API
+port = 8902               # Este puerto ya lo estamos usando, hay que cambiarlo
+
+@app.route('/facegate/app-ia/predict', methods=['POST'])
+def predict():
+    # Obtener RUT desde el formulario
+    rut = request.form.get('rut')
+
+    # Obtener imagen enviada desde el frontend
+    uploaded_image = request.files.get('imagen')
+
+    if uploaded_image is None:
+        return jsonify({
+            "status": "error",
+            "message": "No se recibió la imagen",
+            "data": {
+                "rut": None,
+                "nombre": None,
+                "distancia_coseno": None,
+                "distancia_euclidiana": None
+            }
+        })
+
+    
+    # Simulación de conexión a la base de datos
+    
+    df = pd.read_csv('DB_UCampus/DB_local.csv')
+    # Obtener fila con el RUT proporcionado
+    # estudiante debe abordar el caso en que no se encuentra el RUT en la base de datos
+    estudiante = df[df['Rut'] == rut] 
+    nombre = estudiante['Nombre'].values[0] if not estudiante.empty else None
+    image_path = estudiante['path'].values[0] if not estudiante.empty else None
+    
+    # 0. Si no se encuentra el RUT en la base de datos, se considera que no se puede realizar la comparación
+    if nombre is None or image_path is None:
+        json_respuesta = {
+            "status": "error",
+            "message": "Rut no encontrado",
+            "data": {
+                "rut": None,
+                "nombre": None,
+                "distancia_coseno": None,
+                "distancia_euclidiana": None
+            }
+        }
+        return jsonify(json_respuesta)
+
+    # Realizar la predicción de ambas imagenes con VGGFace2
+    
+    # Obtener el embedding de la imagen subida
+    uploaded_image_bytes = uploaded_image.read()
+    embedding_uploaded_image = get_embedding(uploaded_image_bytes)
+
+    # 0.1 Si no se detecta rostro en la imagen subida, se considera que no se puede realizar la comparación
+    if embedding_uploaded_image is None:
+        json_respuesta = {
+            "status": "error",
+            "message": "Rostro no detectado, acerquese a la cámara",
+            "data": {
+                "rut": None,
+                "nombre": None,
+                "distancia_coseno": None,
+                "distancia_euclidiana": None
+            }
+        }
+        return jsonify(json_respuesta)
+    
+    # Obtener el embedding de la imagen de la base de datos
+    image_path = os.path.join('DB_UCampus', image_path)
+    with open(image_path, 'rb') as f:
+        image_bytes = f.read()
+    embedding_db_image = get_embedding(image_bytes)
+
+    # Comparar los embeddings obtenidos de ambas imagenes con distancia euclidiana
+    distancia_coseno = cosine_distance(embedding_uploaded_image, embedding_db_image)
+    distancia_euclidiana = euclidean_distance(embedding_uploaded_image, embedding_db_image)
+
+    # Entregar una respuesta JSON al frontend con el resultado de la comparación, indicando el RUT y nombre de la persona.
+    # 1. Si la distancia es menor a 0.5, se considera que son la misma persona
+    if distancia_coseno <= 0.5:
+        json_respuesta = {
+            "status": "success",
+            "message": "Acceso permitido",
+            "data": {
+                "rut": rut,
+                "nombre": nombre,
+                "distancia_coseno": distancia_coseno,
+                "distancia_euclidiana": distancia_euclidiana
+            }
+        }
+        return jsonify(json_respuesta)
+
+    # 2. Si la distancia es mayor a 0.5, se considera que son personas distintas
+    if distancia_coseno > 0.5:
+        json_respuesta = {
+            "status": "error",
+            "message": "Acceso denegado",
+            "data": {
+                "rut": rut,
+                "nombre": nombre,
+                "distancia_coseno": distancia_coseno,
+                "distancia_euclidiana": distancia_euclidiana
+            }
+        }
+    return jsonify(json_respuesta)
+
+
+
+if __name__ == "__main__":
+    app.run(port=port)     
