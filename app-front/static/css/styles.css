@@ -38,15 +38,30 @@
     width: 300px;
     height: 350px;
     border: 1px solid #ccc;
-    padding: 25px;
     border-radius: 12px;
-    text-align: center;
+    overflow: hidden; /* Ensures rounded corners for inner parts */
+    display: flex;
+    flex-direction: column;
+}
+.box-header {
+    background-color: white;
+    padding: 12px 20px;
+    border-bottom: 1px solid #ccc;
+    flex-shrink: 0;
+}
+
+.box-body {
+    flex-grow: 1;
     background-color: #f4f4f4;
+    padding: 20px;
+    overflow: auto;
 }
 
 .box-title {
     font-size: 20px;
+    margin: 0;
 }
+
 
 .arrow {
     display: flex;
@@ -81,11 +96,14 @@
 }
 
 .model-decision {
-    height: 60px;/* Match .box height */
+    height: 80px;/* Match .box height */
     display: flex;
     background-color: #afd5ff;
     align-items: center;
     justify-content: center;
     font-size: 18px;
 }
+
+
+
 
