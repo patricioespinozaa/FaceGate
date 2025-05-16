@@ -3,30 +3,28 @@ import io
 from PIL import Image
 import torch
 import torch.nn.functional as F
-import torchvision.transforms as transforms
-from torchvision import models
-from facenet_pytorch import InceptionResnetV1  # o usa otro modelo de VGGFace2 si ya lo tienes
+from facenet_pytorch import InceptionResnetV1, MTCNN
+from torchvision import transforms
 
-# Preprocesamiento: mismo tamaño que VGGFace espera
-def transform_image(image_bytes):
-    transform = transforms.Compose([
-        transforms.Resize((160, 160)),  # InceptionResnetV1 espera 160x160
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5]*3, std=[0.5]*3)
-    ])
-    image = Image.open(io.BytesIO(image_bytes)).convert('RGB')
-    return transform(image).unsqueeze(0)  # Batch size = 1
+# Inicializar el detector de rostros MTCNN (una sola vez)
+mtcnn = MTCNN(image_size=160, margin=0)
 
-# Obtener embeddings desde la imagen
+# Obtener embeddings desde la imagen (con detección de rostro)
 def get_embedding(image_bytes, model):
-    tensor = transform_image(image_bytes)
+    image = Image.open(io.BytesIO(image_bytes)).convert('RGB')
+    face = mtcnn(image)
+    if face is None:
+        raise ValueError("❌ No se detectó ninguna cara en la imagen.")
+    face = face.unsqueeze(0)  # Agregar dimensión de batch
     with torch.no_grad():
-        embedding = model(tensor)
+        embedding = model(face)
     return embedding.squeeze(0)  # (512,)
-    
+
 # Medidas de distancia
 def cosine_distance(a, b):
     return 1 - F.cosine_similarity(a.unsqueeze(0), b.unsqueeze(0)).item()
 
 def euclidean_distance(a, b):
     return torch.norm(a - b).item()
+
+print("Ejecutado utils.py")

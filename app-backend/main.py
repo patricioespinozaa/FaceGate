@@ -25,20 +25,71 @@ def predict():
     # Si la distancia es mayor a 0.5, se considera que son personas distintas
 
     # Entregar una respuesta JSON al frontend con el resultado de la comparación, indicando el RUT y nombre de la persona.
-
-
-    token = requests.headers.get("X-Auth-Token")
-    if token == AUTH_SECRET:
-        file = request.files['file']
-        img_bytes = file.read()
-        start_time = time.time()
-        resultados = get_prediction(image_bytes=img_bytes)
-        duration = f"{time.time() - start_time:.4f}"
+    # Casos: 
+    
+    # 0. Si no se encuentra el RUT en la base de datos, se considera que no se puede realizar la comparación
+    rut = None
+    if rut is None:
         json_respuesta = {
-                'resultados': resultados,
-                'tiempo': duration
+            "status": "error",
+            "message": "Rut no encontrado",
+            "data": {
+                "rut": None,
+                "nombre": None,
+                "distancia_coseno": None,
+                "distancia_euclidiana": None
+            }
         }
-        print("responder: {}".format(json_respuesta))
+
+    # 1. Si la distancia es menor a 0.5, se considera que son la misma persona
+    rut = 123456789
+    rut = str(rut)
+    nombre = "Juan Pérez"
+    distancia_coseno = 0.3
+    distancia_euclidiana = 0.4
+    if distancia_coseno < 0.5:
+        json_respuesta = {
+            "status": "success",
+            "message": "Acceso permitido",
+            "data": {
+                "rut": rut,
+                "nombre": nombre,
+                "distancia_coseno": distancia_coseno,
+                "distancia_euclidiana": distancia_euclidiana
+            }
+        }
+
+    # 2. Si la distancia es mayor a 0.5, se considera que son personas distintas
+    rut = 123456789
+    rut = str(rut)
+    nombre = "Juan Pérez"
+    distancia_coseno = 0.6
+    distancia_euclidiana = 0.7
+    if distancia_coseno > 0.5:
+        json_respuesta = {
+            "status": "error",
+            "message": "Acceso denegado",
+            "data": {
+                "rut": rut,
+                "nombre": nombre,
+                "distancia_coseno": distancia_coseno,
+                "distancia_euclidiana": distancia_euclidiana
+            }
+        }
+
+    # 3. Si no se detecta rostro en la imagen subida, se considera que no se puede realizar la comparación
+    detectar_rostro = False
+    if not detectar_rostro:
+        json_respuesta = {
+            "status": "error",
+            "message": "Rostro no detectado, acerquese a la cámara",
+            "data": {
+                "rut": None,
+                "nombre": None,
+                "distancia_coseno": None,
+                "distancia_euclidiana": None
+            }
+        }
     return jsonify(json_respuesta)
 
 
