@@ -2,7 +2,7 @@
 
 
 
-# Ejecución del Backend
+## Backend
 
 Pasos para configurar y ejecutar el backend correctamente:
 
@@ -26,7 +26,20 @@ pip install -r backend_requirements.txt
 ```
 
 ### 4. Ejecutar los tests
-Desde la carpeta app-backend, ejecuta el archivo de pruebas:
+Desde la carpeta app-backend, ejecutar los archivos de pruebas:
+
+- Preprocesamiento en utils.py
 ```bash
-python test/test.py
+python test/test_utils.py
+```
+
+- Funcionamiento de la aplicación 
+```bash
+# En una terminal se ejecuta la aplicación
+python main.py
+```
+
+```bash
+# En otra terminal se ejecuta el test de la app
+python test/test_main.py
 ```
