@@ -15,7 +15,7 @@ def get_embedding(image_bytes, model):
     image = Image.open(io.BytesIO(image_bytes)).convert('RGB')
     face = mtcnn(image)
     if face is None:
-        raise ValueError("❌ No se detectó ninguna cara en la imagen.")
+        raise ValueError("No se detectó ninguna cara en la imagen.")
     face = face.unsqueeze(0)  
     with torch.no_grad():
         embedding = model(face)

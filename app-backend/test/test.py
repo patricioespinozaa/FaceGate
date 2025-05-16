@@ -38,7 +38,7 @@ try:
     else:
         print("❌ Rostros distintos (coseno)")
 
-    if euc_dist < 1.0:  # Puedes ajustar este umbral
+    if euc_dist < 1.0:
         print("✅ Mismo rostro (euclidiana)")
     else:
         print("❌ Rostros distintos (euclidiana)")
