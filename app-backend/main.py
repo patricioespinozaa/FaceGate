@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from app import app
-from utils import get_prediction
 from flask import Flask, jsonify, request
 import pandas as pd
 import time

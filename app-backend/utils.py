@@ -5,7 +5,7 @@ import torch
 import torch.nn.functional as F
 from facenet_pytorch import InceptionResnetV1, MTCNN
 from torchvision import transforms
-from app import model, imagenet_class_index
+from app import model
 
 # Inicializar el detector de rostros MTCNN
 mtcnn = MTCNN(image_size=160, margin=0)
