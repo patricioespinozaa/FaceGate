@@ -1,1 +1,57 @@
-Hello World!
+{% extends "base.html" %}
+
+{% block content %}
+<!--Welcome-->
+<div class="welcome-container">
+    <div>¡Bienvenid@!</div>
+    <div class="input-group-custom">
+        <!--Rut input-->
+        <label for="rut">Digita tu rut:</label>
+        <input type="text" id="rut" placeholder="Ingresa tu rut">
+    </div>
+</div>
+
+<!--Cámara y Ucampus-->
+<div class="main-content">
+    <div class="model-container">
+        <div class="model-row">
+            <!-- Cámara -->
+            <div class="box">
+                <div class="box-header">
+                    <p class="box-title">Cámara</p>
+                </div>
+                <div class="box-body">
+                    <div class="box-body d-flex justify-content-center align-items-center" id="camera-body">
+                        <div class="spinner" id="camera-spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">
+                <span>→</span>
+            </div>
+
+            <!-- Ucampus -->
+            <div class="box">
+                <div class="box-header">
+                    <p class="box-title">Ucampus</p>
+                </div>
+                <div class="box-body">
+                    <div class="box-body d-flex justify-content-center align-items-center" id="camera-body">
+                        <div class="spinner" id="camera-spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">
+                <span>→</span>
+            </div>
+
+            <!-- Decision box -->
+            <div class="box model-decision">
+                <label>Acércate a la cámara</label>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
