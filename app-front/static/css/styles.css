@@ -128,3 +128,8 @@
     100% { transform: rotate(360deg); }
 }
 
+.rut-message {
+    color: green;
+    margin-top: 8px;
+    font-weight: bold;
+}

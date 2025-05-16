@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         setTimeout(() => {
                             messageDiv.style.display = 'none';
                             messageDiv.textContent = '';
-                        }, 2000);
+                        }, 5000);
                     })
                     .catch(error => {
                         console.error('Error:', error);
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         setTimeout(() => {
                             messageDiv.style.display = 'none';
                             messageDiv.textContent = '';
-                        }, 10000);
+                        }, 5000);
                     });
             }
         });
