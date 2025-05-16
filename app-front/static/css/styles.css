@@ -49,13 +49,18 @@
     border-bottom: 1px solid #ccc;
     flex-shrink: 0;
 }
-
 .box-body {
+    display: flex;
     flex-grow: 1;
     background-color: #f4f4f4;
     padding: 20px;
     overflow: auto;
+    justify-content: center;  /* Centers horizontally */
+    align-items: center;      /* Centers vertically */
+    height: 200px;            /* Give it a fixed height */
+    position: relative;
 }
+
 
 .box-title {
     font-size: 20px;
@@ -104,6 +109,18 @@
     font-size: 18px;
 }
 
+.spinner {
+    border: 8px solid #f3f3f3; /* Light gray */
+    border-top: 8px solid #7f7f7f; /* Dark blue */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin: auto;
+}
 
-
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
