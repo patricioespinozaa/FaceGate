@@ -38,6 +38,11 @@
     color: #7f7f7f;
 }
 
+.input-with-message {
+    display: flex;
+    flex-direction: column;
+}
+
 .box {
     width: 300px;
     height: 350px;
@@ -129,7 +134,23 @@
 }
 
 .rut-message {
-    color: green;
-    margin-top: 8px;
+    margin-top: 4px;
     font-weight: bold;
+    font-size: 18px;
+    margin-left: 150px;
+    height: 1.2em;
+    width: 400px;
+    visibility: hidden;
+}
+
+.rut-message.success {
+    color: green;
+}
+
+.rut-message.error {
+    color: red;
+}
+
+.rut-message.visible {
+    visibility: visible;
 }
