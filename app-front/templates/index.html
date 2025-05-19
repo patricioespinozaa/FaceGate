@@ -59,8 +59,11 @@
             </div>
 
             <!-- Decision box -->
-            <div class="box model-decision">
-                <label>Acércate a la cámara</label>
+            <div class="decision-column">
+                <div class="box model-decision" id="decision-box">
+                    <div id="access-label">Acércate a la cámara</div>
+                </div>
+                <div id="decision-message" class="decision-message"></div>
             </div>
         </div>
     </div>
@@ -72,5 +75,6 @@
 
 <script src="{{ url_for('static', filename='js/rut_sender.js') }}"></script>
 <script src="{{ url_for('static', filename='js/upload_image.js') }}"></script>
+<script src="{{ url_for('static', filename='js/update_decision.js') }}"></script>
 
 {% endblock %}
