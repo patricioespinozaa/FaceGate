@@ -21,9 +21,12 @@
                     <p class="box-title">Cámara</p>
                 </div>
                 <div class="box-body">
-                    <div class="box-body d-flex justify-content-center align-items-center" id="camera-body">
-                        <div class="spinner" id="camera-spinner"></div>
-                    </div>
+                    <img id="preview-image" src="" alt="Vista previa" style="display:none; max-width:100%; max-height:100%; border-radius: 10px;" />
+                    <!-- Upload Button -->
+                    <label for="upload-input" style="cursor: pointer;">
+                        <img src="{{ url_for('static', filename='img/upload.png') }}" alt="Subir imagen" style="width: 60px; height: 60px;">
+                    </label>
+                    <input type="file" id="upload-input" accept="image/*" style="display: none;" />
                 </div>
             </div>
 
