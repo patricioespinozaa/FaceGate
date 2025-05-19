@@ -38,6 +38,11 @@
     color: #7f7f7f;
 }
 
+.input-with-message {
+    display: flex;
+    flex-direction: column;
+}
+
 .box {
     width: 300px;
     height: 350px;
@@ -127,4 +132,54 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+.rut-message {
+    margin-top: 4px;
+    font-weight: bold;
+    font-size: 18px;
+    margin-left: 150px;
+    height: 1.2em;
+    width: 400px;
+    visibility: hidden;
+}
+
+.rut-message.success {
+    color: green;
+}
+
+.rut-message.error {
+    color: red;
+}
+
+.rut-message.visible {
+    visibility: visible;
+}
+#preview-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#preview-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+#upload-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+#upload-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 
