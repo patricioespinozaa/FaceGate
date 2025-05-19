@@ -1,44 +1,53 @@
 from pathlib import Path
-from facenet_pytorch import InceptionResnetV1
 import torch
 import os
 import sys
-
-# Funciones auxiliares
+from typing import Optional
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils import get_embedding, cosine_distance, euclidean_distance
 
-# Rutas de imágenes
-img1_path = 'test/src/20918356-0.jpg'
-img2_path = 'test/src/Foto_Patricio.jpg'
+# Image paths
+img1_path: str = 'test/src/20918356-0.jpg'
+img2_path: str = 'test/src/Foto_Patricio.jpg'
 
-# Leer imágenes como bytes
-img1_bytes = Path(img1_path).read_bytes()
-img2_bytes = Path(img2_path).read_bytes()
+# Read images as bytes
+img1_bytes: bytes = Path(img1_path).read_bytes()
+img2_bytes: bytes = Path(img2_path).read_bytes()
 
-try:
-    # Obtener embeddings
-    emb1 = get_embedding(img1_bytes)
-    emb2 = get_embedding(img2_bytes)
+def main() -> None:
+    """
+    Main function to compute embeddings of two images and compare their similarity using
+    cosine and euclidean distances.
+    """
+    try:
+        # Get embeddings
+        emb1: Optional[torch.Tensor] = get_embedding(img1_bytes, save_path='test/src/outputs/test_utils_DB_face.jpg')
+        emb2: Optional[torch.Tensor] = get_embedding(img2_bytes, save_path='test/src/outputs/test_utils_Uploaded_face2.jpg')
 
-    # Calcular distancias
-    cos_dist = cosine_distance(emb1, emb2)
-    euc_dist = euclidean_distance(emb1, emb2)
+        if emb1 is None or emb2 is None:
+            raise ValueError("Face not detected in one or both images.")
 
-    # Mostrar resultados
-    print(f'Distancia coseno:     {cos_dist:.4f}')
-    print(f'Distancia euclidiana: {euc_dist:.4f}')
+        # Calculate distances
+        cos_dist: float = cosine_distance(emb1, emb2)
+        euc_dist: float = euclidean_distance(emb1, emb2)
 
-    # Interpretación
-    if cos_dist < 0.5:
-        print("✅ Mismo rostro (coseno)")
-    else:
-        print("❌ Rostros distintos (coseno)")
+        # Print results
+        print(f'Cosine distance:     {cos_dist:.4f}')
+        print(f'Euclidean distance:  {euc_dist:.4f}')
 
-    if euc_dist < 1.0:
-        print("✅ Mismo rostro (euclidiana)")
-    else:
-        print("❌ Rostros distintos (euclidiana)")
+        # Interpretation
+        if cos_dist < 0.5:
+            print("Same face (cosine)")
+        else:
+            print("Different faces (cosine)")
 
-except ValueError as e:
-    print(e)
+        if euc_dist < 1.0:
+            print("Same face (euclidean)")
+        else:
+            print("Different faces (euclidean)")
+
+    except ValueError as e:
+        print(e)
+
+if __name__ == "__main__":
+    main()

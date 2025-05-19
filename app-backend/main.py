@@ -1,27 +1,32 @@
 # -*- coding: utf-8 -*-
 from app import app
-from flask import Flask, jsonify, request
+from flask import jsonify, request, Response
 import pandas as pd
-import time
-
+from typing import Optional, Dict, Any
 from utils import get_embedding, cosine_distance, euclidean_distance
 import os
 
-# Puerto para la API
-port = 8902               # Este puerto ya lo estamos usando, hay que cambiarlo
+# API port
+port: int = 8902  # Needs to be changed
 
 @app.route('/facegate/app-ia/predict', methods=['POST'])
-def predict():
-    # Obtener RUT desde el formulario
-    rut = request.form.get('rut')
+def predict() -> Response:
+    """
+    Process a face recognition prediction request.
 
-    # Obtener imagen enviada desde el frontend
+    Returns:
+        Response: JSON response with prediction results or error messages.
+    """
+    # Get RUT from the form
+    rut: Optional[str] = request.form.get('rut')
+
+    # Get the image sent from the frontend
     uploaded_image = request.files.get('imagen')
 
     if uploaded_image is None:
         return jsonify({
             "status": "error",
-            "message": "No se recibió la imagen",
+            "message": "No image received",
             "data": {
                 "rut": None,
                 "nombre": None,
@@ -30,19 +35,17 @@ def predict():
             }
         })
 
-    
-    # Simulación de conexión a la base de datos
-    
+    # Simulate database connection
     df = pd.read_csv('DB_UCampus/DB_local.csv')
-    # Obtener fila con el RUT proporcionado
-    # estudiante debe abordar el caso en que no se encuentra el RUT en la base de datos
-    estudiante = df[df['Rut'] == rut] 
-    nombre = estudiante['Nombre'].values[0] if not estudiante.empty else None
-    image_path = estudiante['path'].values[0] if not estudiante.empty else None
-    
-    # 0. Si no se encuentra el RUT en la base de datos, se considera que no se puede realizar la comparación
-    if nombre is None or image_path is None:
-        json_respuesta = {
+
+    # Find row matching the provided RUT
+    student = df[df['Rut'] == rut]
+    name: Optional[str] = student['Nombre'].values[0] if not student.empty else None
+    image_path: Optional[str] = student['path'].values[0] if not student.empty else None
+
+    # 0. If RUT is not found in the database, comparison cannot be done
+    if name is None or image_path is None:
+        json_response: Dict[str, Any] = {
             "status": "error",
             "message": "Rut no encontrado",
             "data": {
@@ -52,17 +55,17 @@ def predict():
                 "distancia_euclidiana": None
             }
         }
-        return jsonify(json_respuesta)
+        return jsonify(json_response)
 
-    # Realizar la predicción de ambas imagenes con VGGFace2
-    
-    # Obtener el embedding de la imagen subida
-    uploaded_image_bytes = uploaded_image.read()
+    # Perform prediction with VGGFace2 embeddings
+
+    # Get embedding from the uploaded image
+    uploaded_image_bytes: bytes = uploaded_image.read()
     embedding_uploaded_image = get_embedding(uploaded_image_bytes)
 
-    # 0.1 Si no se detecta rostro en la imagen subida, se considera que no se puede realizar la comparación
+    # 0.1 If no face detected in the uploaded image, cannot compare
     if embedding_uploaded_image is None:
-        json_respuesta = {
+        json_response = {
             "status": "error",
             "message": "Rostro no detectado, acerquese a la cámara",
             "data": {
@@ -72,48 +75,47 @@ def predict():
                 "distancia_euclidiana": None
             }
         }
-        return jsonify(json_respuesta)
-    
-    # Obtener el embedding de la imagen de la base de datos
+        return jsonify(json_response)
+
+    # Get embedding from the database image
     image_path = os.path.join('DB_UCampus', image_path)
     with open(image_path, 'rb') as f:
         image_bytes = f.read()
     embedding_db_image = get_embedding(image_bytes)
 
-    # Comparar los embeddings obtenidos de ambas imagenes con distancia euclidiana
-    distancia_coseno = cosine_distance(embedding_uploaded_image, embedding_db_image)
-    distancia_euclidiana = euclidean_distance(embedding_uploaded_image, embedding_db_image)
+    # Compare embeddings using cosine and euclidean distances
+    cosine_dist = cosine_distance(embedding_uploaded_image, embedding_db_image)
+    euclidean_dist = euclidean_distance(embedding_uploaded_image, embedding_db_image)
 
-    # Entregar una respuesta JSON al frontend con el resultado de la comparación, indicando el RUT y nombre de la persona.
-    # 1. Si la distancia es menor a 0.5, se considera que son la misma persona
-    if distancia_coseno <= 0.5:
-        json_respuesta = {
+    # Return JSON response with comparison result, RUT, and name
+    # 1. If cosine distance <= 0.5, consider the same person (access granted)
+    if cosine_dist <= 0.5:
+        json_response = {
             "status": "success",
             "message": "Acceso permitido",
             "data": {
                 "rut": rut,
-                "nombre": nombre,
-                "distancia_coseno": distancia_coseno,
-                "distancia_euclidiana": distancia_euclidiana
+                "nombre": name,
+                "distancia_coseno": cosine_dist,
+                "distancia_euclidiana": euclidean_dist
             }
         }
-        return jsonify(json_respuesta)
+        return jsonify(json_response)
 
-    # 2. Si la distancia es mayor a 0.5, se considera que son personas distintas
-    if distancia_coseno > 0.5:
-        json_respuesta = {
+    # 2. If cosine distance > 0.5, consider different people (access denied)
+    if cosine_dist > 0.5:
+        json_response = {
             "status": "error",
             "message": "Acceso denegado",
             "data": {
                 "rut": rut,
-                "nombre": nombre,
-                "distancia_coseno": distancia_coseno,
-                "distancia_euclidiana": distancia_euclidiana
+                "nombre": name,
+                "distancia_coseno": cosine_dist,
+                "distancia_euclidiana": euclidean_dist
             }
         }
-    return jsonify(json_respuesta)
-
+    return jsonify(json_response)
 
 
 if __name__ == "__main__":
-    app.run(port=port)     
+    app.run(port=port)
