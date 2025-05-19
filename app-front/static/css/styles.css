@@ -62,7 +62,6 @@
     display: flex;
     flex-grow: 1;
     background-color: #f4f4f4;
-    padding: 20px;
     overflow: auto;
     justify-content: center;  /* Centers horizontally */
     align-items: center;      /* Centers vertically */
