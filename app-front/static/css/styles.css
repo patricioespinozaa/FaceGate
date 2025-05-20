@@ -183,10 +183,12 @@
     width: fit-content;
     margin-left: auto;
     margin-right: auto;
+    min-height: 35px;
+    visibility: hidden;
 }
 
-#decision-message:empty {
-    display: none;
+#decision-message:not(:empty) {
+    visibility: visible;
 }
 
 .decision-message.success {
