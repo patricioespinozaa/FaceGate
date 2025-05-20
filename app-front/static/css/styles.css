@@ -123,27 +123,6 @@
     100% { transform: rotate(360deg); }
 }
 
-.rut-message {
-    margin-top: 4px;
-    font-weight: bold;
-    font-size: 18px;
-    margin-left: 150px;
-    height: 1.2em;
-    width: 400px;
-    visibility: hidden;
-}
-
-.rut-message.success {
-    color: green;
-}
-
-.rut-message.error {
-    color: red;
-}
-
-.rut-message.visible {
-    visibility: visible;
-}
 #preview-container {
     display: flex;
     justify-content: center;

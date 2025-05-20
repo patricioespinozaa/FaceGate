@@ -20,17 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     formData.append('imagen', uploadedFile);
                     enviarFormulario(formData);
                 } else {
-                    // Imagen por defecto
-                    fetch('/static/img/facegate.png')
-                        .then(response => response.blob())
-                        .then(blob => {
-                            formData.append('imagen', blob, 'facegate.png');
-                            enviarFormulario(formData);
-                        })
-                        .catch(error => {
-                            console.error('❌ Error al cargar imagen por defecto:', error);
-                            mostrarError('No se pudo cargar la imagen por defecto');
-                        });
+                    console.error('❌ Error al cargar imagen por defecto:', error);
                 }
             }
         });
@@ -44,29 +34,10 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 console.log('✅ Backend response:', data);
-                const status = data.status;
-                const nombre = data.data.nombre;
-                const isVerified = (status === 'success');
-                updateDecision(isVerified, nombre);
-                messageDiv.textContent = data.message;
-                messageDiv.classList.remove('error');
-                messageDiv.classList.add('visible', 'success');
-                setTimeout(() => {
-                    messageDiv.classList.remove('visible', 'success');
-                }, 5000);
+                updateDecision(data.status === 'success', data.data.nombre);
             })
-          /*  .catch(error => {
+          .catch(error => {
                 console.error('❌ Error:', error);
-                mostrarError('Error al enviar');
-            });*/
-    }
-
-    function mostrarError(msg) {
-        messageDiv.textContent = msg;
-        messageDiv.classList.remove('success');
-        messageDiv.classList.add('visible', 'error');
-        setTimeout(() => {
-            messageDiv.classList.remove('visible', 'error');
-        }, 5000);
+            });
     }
 });
