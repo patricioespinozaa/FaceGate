@@ -1,2 +1,16 @@
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Entorno virtual
+venv/
+
+# Envs
+app-backend/backend_env/
+
 # Envs
 app-backend/backend_env/
