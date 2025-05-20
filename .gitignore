@@ -8,3 +8,6 @@ __pycache__/
 
 # Entorno virtual
 venv/
+
+# Envs
+app-backend/backend_env/
