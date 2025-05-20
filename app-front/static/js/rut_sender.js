@@ -5,38 +5,68 @@ document.addEventListener('DOMContentLoaded', function () {
     if (rutInput) {
         rutInput.addEventListener('keydown', function (event) {
             if (event.key === 'Enter') {
-                const rutValue = event.target.value.trim();
-                console.log('Sending RUT:', rutValue);
+                const rutValue = rutInput.value.trim();
+                if (!rutValue) return;
 
-                fetch('/Facegate/send_rut', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ rut: rutValue })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Response from backend:', data);
-                        messageDiv.textContent = 'Enviado correctamente';
-                        messageDiv.classList.remove('success','error');
-                        messageDiv.classList.add('visible', 'success');
+                const formData = new FormData();
+                formData.append('rut', rutValue);
 
-                        setTimeout(() => {
-                            messageDiv.classList.remove('visible', 'success');
-                        }, 5000);
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        messageDiv.textContent = 'Error al enviar';
-                        messageDiv.classList.remove('success','error');
-                        messageDiv.classList.add('visible', 'error');
+                // Buscar input de imagen
+                const fileInput = document.getElementById('image-upload');
+                const uploadedFile = fileInput?.files[0];
 
-                        setTimeout(() => {
-                            messageDiv.classList.remove('visible', 'error');
-                        }, 5000);
-                    });
+                if (uploadedFile && uploadedFile.type.startsWith('image/')) {
+                    // Imagen subida por el usuario
+                    formData.append('imagen', uploadedFile);
+                    enviarFormulario(formData);
+                } else {
+                    // Imagen por defecto
+                    fetch('/static/img/facegate.png')
+                        .then(response => response.blob())
+                        .then(blob => {
+                            formData.append('imagen', blob, 'facegate.png');
+                            enviarFormulario(formData);
+                        })
+                        .catch(error => {
+                            console.error('❌ Error al cargar imagen por defecto:', error);
+                            mostrarError('No se pudo cargar la imagen por defecto');
+                        });
+                }
             }
         });
+    }
+
+    function enviarFormulario(formData) {
+        const data = fetch('http://localhost:8902/facegate/app-ia/predict', {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log('✅ Backend response:', data);
+                const status = data.status;
+                const nombre = data.data.nombre;
+                const isVerified = (status === 'success');
+                updateDecision(isVerified, nombre);
+                messageDiv.textContent = data.message;
+                messageDiv.classList.remove('error');
+                messageDiv.classList.add('visible', 'success');
+                setTimeout(() => {
+                    messageDiv.classList.remove('visible', 'success');
+                }, 5000);
+            })
+          /*  .catch(error => {
+                console.error('❌ Error:', error);
+                mostrarError('Error al enviar');
+            });*/
+    }
+
+    function mostrarError(msg) {
+        messageDiv.textContent = msg;
+        messageDiv.classList.remove('success');
+        messageDiv.classList.add('visible', 'error');
+        setTimeout(() => {
+            messageDiv.classList.remove('visible', 'error');
+        }, 5000);
     }
 });
