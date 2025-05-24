@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!--Welcome-->
+<div class="welcome-container">
+    <div>¡Bienvenid@!</div>
+    <div class="input-group-custom">
+        <!--Rut input-->
+        <div>
+            <label for="rut">Digita tu rut:</label>
+            <input type="text" id="rut" placeholder="Ingresa tu rut">
+        </div>
+    </div>
+</div>
+
+<!--Cámara y Ucampus-->
+<div class="main-content">
+    <div class="model-container">
+        <div class="model-row">
+            <!-- Cámara -->
+            <div class="box">
+                <div class="box-header">
+                    <p class="box-title">Cámara</p>
+                </div>
+                <div class="box-body" id="camera-body-camara">
+                    <div id="upload-wrapper" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
+                        <div id="upload-icon">
+                            <label for="image-upload">
+                                <img src="{{ url_for('static', filename='img/upload.png') }}" alt="Upload" style="cursor: pointer; width: 60px;" />
+                            </label>
+                        </div>
+                        <div id="preview-container" style="display: none;">
+                            <img id="preview-image" />
+                        </div>
+                    </div>
+                    <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                </div>
+            </div>
+
+            <div class="arrow">
+                <span>→</span>
+            </div>
+
+            <!-- Ucampus -->
+            <div class="box">
+                <div class="box-header">
+                    <p class="box-title">Ucampus</p>
+                </div>
+                <div class="box-body">
+                    <div class="box-body d-flex justify-content-center align-items-center" id="camera-body-ucampus">
+                        <div class="spinner" id="camera-spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">
+                <span>→</span>
+            </div>
+
+            <!-- Decision box -->
+            <div class="decision-column">
+                <div class="box model-decision" id="decision-box">
+                    <div id="access-label">Acércate a la cámara</div>
+                </div>
+                <div id="decision-message" class="decision-message"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+
+<script src="{{ url_for('static', filename='js/upload_image.js') }}"></script>
+<script src="{{ url_for('static', filename='js/update_decision.js') }}"></script>
+<script src="{{ url_for('static', filename='js/rut_sender.js') }}"></script>
+
+{% endblock %}
