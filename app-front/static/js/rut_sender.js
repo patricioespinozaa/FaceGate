@@ -11,17 +11,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const formData = new FormData();
                 formData.append('rut', rutValue);
 
-                // Buscar input de imagen
-                const fileInput = document.getElementById('image-upload');
-                const uploadedFile = fileInput?.files[0];
 
-                if (uploadedFile && uploadedFile.type.startsWith('image/')) {
-                    // Imagen subida por el usuario
-                    formData.append('imagen', uploadedFile);
-                    enviarFormulario(formData);
-                } else {
-                    console.error('❌ Error al cargar imagen por defecto.');
-                }
+                // Buscar input de imagen
+                const fileInput = document.getElementById('captura');
+                formData.append('imagen', fileInput)
             }
         });
     }
