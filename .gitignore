@@ -1,0 +1,7 @@
+/data/
+/apache-app-ia/
+/.vscode/
+/.ipynb_checkpoints/
+/output/
+server_app-front.sh
+server_app-ia.sh
