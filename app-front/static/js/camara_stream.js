@@ -13,12 +13,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+//Boton de captura
 document.getElementById('captura').addEventListener('click', function () {
     var canvas = document.createElement('canvas');
-    var video = document.getElementById('videoStream');
+    var video = document.getElementById('video-stream');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     canvas.getContext('2d').drawImage(video, 0, 0);
-    var dataURL = canvas.toDataURL('image/imagen');
-    console.log("Se saca la foto")
+
+    canvas.toBlob(function (blob) {
+        if (blob) {
+            window.lastCaptureBlob = blob;  // Guarda global para que otro JS lo use
+            console.log("Foto capturada y almacenada en window.lastCaptureBlob");
+        } else {
+            console.error("No se pudo crear el blob de la imagen");
+        }
+    }, 'image/jpeg');
 });

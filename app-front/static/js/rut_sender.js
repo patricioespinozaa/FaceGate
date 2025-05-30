@@ -8,13 +8,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 const rutValue = rutInput.value.trim();
                 if (!rutValue) return;
 
+                if (!window.lastCaptureBlob) {
+                    console.warn("No hay imagen capturada aún.");
+                    return;
+                }
+
+
                 const formData = new FormData();
                 formData.append('rut', rutValue);
+                formData.append('imagen', window.lastCaptureBlob, 'captura.jpeg');
 
-
-                // Buscar input de imagen
-                const fileInput = document.getElementById('captura');
-                formData.append('imagen', fileInput)
+                enviarFormulario(formData);
             }
         });
     }
