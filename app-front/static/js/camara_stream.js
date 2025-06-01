@@ -15,12 +15,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
 //Boton de captura
 document.getElementById('captura').addEventListener('click', function () {
-    var canvas = document.createElement('canvas');
     var video = document.getElementById('video-stream');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0);
+    const videoWidth = video.videoWidth;
+    const videoHeight = video.videoHeight;
+    const squareSize = Math.min(videoWidth, videoHeight);
+    const finalWidth = squareSize + 10;
+    const finalHeight = squareSize;
+    const cropX = (videoWidth - finalWidth) / 2;
+    const cropY = (videoHeight - finalHeight) / 2;
+    var canvas = document.createElement('canvas');
 
+    canvas.width = finalWidth;
+    canvas.height = finalHeight;
+
+    canvas.getContext('2d').drawImage(video, cropX, cropY, finalWidth, finalHeight, 0, 0, finalWidth, finalHeight);
     canvas.toBlob(function (blob) {
         if (blob) {
             window.lastCaptureBlob = blob;  // Guarda global para que otro JS lo use
