@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function enviarFormulario(formData) {
-        const data = fetch('http://gate.dcc.uchile.cl:8633/facegate/app-ia/predict', {
+        const data = fetch('https://grupo3.juan.cl/facegate/app-ia/predict', {
             method: 'POST',
             body: formData
         })
