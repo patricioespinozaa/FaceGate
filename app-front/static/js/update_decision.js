@@ -8,8 +8,6 @@ function updateDecision(isVerified, studentName = '', studentPhoto = '', dataMes
     decisionBox.classList.remove('success', 'error');
     decisionMessage.classList.remove('success', 'error');   
     const img = document.createElement('img');
-    img.style.maxWidth = '100%';
-    img.style.maxHeight = '100%';        
     if (isVerified && dataMessage == "Acceso permitido") {
         decisionBox.classList.add('success');
         accessLabel.textContent = "ACCESO PERMITIDO";
