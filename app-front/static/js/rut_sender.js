@@ -8,26 +8,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 const rutValue = rutInput.value.trim();
                 if (!rutValue) return;
 
+                if (!window.lastCaptureBlob) {
+                    console.warn("No hay imagen capturada aún.");
+                    return;
+                }
+
+
                 const formData = new FormData();
                 formData.append('rut', rutValue);
+                formData.append('imagen', window.lastCaptureBlob, 'captura.jpeg');
 
-                // Buscar input de imagen
-                const fileInput = document.getElementById('image-upload');
-                const uploadedFile = fileInput?.files[0];
-
-                if (uploadedFile && uploadedFile.type.startsWith('image/')) {
-                    // Imagen subida por el usuario
-                    formData.append('imagen', uploadedFile);
-                    enviarFormulario(formData);
-                } else {
-                    console.error('❌ Error al cargar imagen por defecto.');
-                }
+                enviarFormulario(formData);
             }
         });
     }
 
     function enviarFormulario(formData) {
-        const data = fetch('http://gate.dcc.uchile.cl:8633/facegate/app-ia/predict', {
+        const data = fetch('https://grupo3.juan.cl/facegate/app-ia/predict', {
             method: 'POST',
             body: formData
         })

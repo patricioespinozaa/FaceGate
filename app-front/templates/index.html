@@ -17,26 +17,20 @@
 <div class="main-content">
     <div class="model-container">
         <div class="model-row">
-            <!-- Cámara -->
-            <div class="box">
-                <div class="box-header">
-                    <p class="box-title">Cámara</p>
-                </div>
-                <div class="box-body" id="camera-body-camara">
-                    <div id="upload-wrapper" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
-                        <div id="upload-icon">
-                            <label for="image-upload">
-                                <img src="{{ url_for('static', filename='img/upload.png') }}" alt="Upload" style="cursor: pointer; width: 60px;" />
-                            </label>
-                        </div>
-                        <div id="preview-container" style="display: none;">
-                            <img id="preview-image" />
-                        </div>
+            <div class="model-column">
+                <!-- Cámara -->
+                <div class="box">
+                    <div class="box-header">
+                        <p class="box-title">Cámara</p>
                     </div>
-                    <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                    <div class="box-body" id="camera-body-camara">
+                        <video autoplay="true" id="video-stream"></video> 
+                    </div>
+                </div>
+                <div>
+                    <button class ="photoCap" id="captura"><div id="button-label">Sacar foto</div></button>
                 </div>
             </div>
-
             <div class="arrow">
                 <span>→</span>
             </div>
@@ -75,5 +69,6 @@
 <script src="{{ url_for('static', filename='js/upload_image.js') }}"></script>
 <script src="{{ url_for('static', filename='js/update_decision.js') }}"></script>
 <script src="{{ url_for('static', filename='js/rut_sender.js') }}"></script>
+<script src="{{ url_for('static', filename='js/camara_stream.js') }}"></script>
 
 {% endblock %}
