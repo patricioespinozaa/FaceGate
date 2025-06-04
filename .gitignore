@@ -5,3 +5,6 @@
 /output/
 server_app-front.sh
 server_app-ia.sh
+
+/app-front/static/img/
+/app-ia/DB_UCampus/uploads/
