@@ -124,6 +124,18 @@
     100% { transform: rotate(360deg); }
 }
 
+#camera-body-ucampus {
+  width: 100%;
+  height: 100%;
+}
+
+#camera-body-ucampus img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 #preview-container {
     display: flex;
     justify-content: center;
