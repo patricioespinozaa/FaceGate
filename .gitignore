@@ -1,7 +1,12 @@
+# Data
 /data/
-/apache-app-ia/
-/.vscode/
-/.ipynb_checkpoints/
 /output/
+/app-ia/DB_UCampus/
+/app-ia/test/src/
+
+# Server
+/apache-app-ia/
 server_app-front.sh
 server_app-ia.sh
+/.vscode/
+/.ipynb_checkpoints/
