@@ -265,3 +265,13 @@
     margin-top: 0;
     font-weight: bold;
 }
+
+#instructions-container {
+    overflow: hidden;
+    max-height: 1000px;
+    transition: max-height 0.4s ease;
+}
+
+#instructions-container.collapsed {
+    max-height: 0;
+}
