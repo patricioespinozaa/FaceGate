@@ -215,6 +215,7 @@
     border-color: #DA1E28;
 }
 
+/* Si debemos alinear mas elementos en una columna
 .model-column{
   display: flex;
   flex-direction: column;
@@ -223,7 +224,9 @@
   height: 100%; 
   margin-top: 70px;
 }
+*/
 
+/* boton
 .photoCap {
     background-color: #afd5ff;
     align-items: center;
@@ -246,3 +249,4 @@
     font-size: 16px;
     font-weight: bold;
 }
+*/
