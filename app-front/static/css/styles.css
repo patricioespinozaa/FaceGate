@@ -247,6 +247,18 @@
     font-weight: bold;
 }
 
+#video-stream {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+    background-color: #f4f4f4;
+}
+
+
 .instructions-floating {
     position: absolute;
     top: 80px;
