@@ -16,14 +16,23 @@ if not EVAL_DIR:
     raise ValueError("[Error] EVAL_DIR not set. Please define it in your .env file.")
 
 def evaluate_image(image_path: str, claimed_rut: str, real_rut: str) -> None:
-    """Evalúa una imagen y actualiza las métricas."""
+    """Evaluate a single image against the API with the claimed RUT.
+    Args:
+        image_path (str): Path to the image file to be evaluated.
+        claimed_rut (str): RUT claimed in the API request (the one that was submitted).
+        real_rut (str): Actual RUT corresponding to the image (ground truth).
+
+    Returns:
+        None
+    
+    """
     result = send_image_to_api(image_path, claimed_rut)
     if result is None:
         print(f"[Error] with image '{image_path}': API call failed or invalid JSON.")
         return
 
-    prediction_success = result.get("status") == "success"
-
+    # print(f"Resultado = {result}") #NOTE: Al descomentarlo se guardará en el txt resultante (permite observar en que imagen falla)
+    prediction_success = result.get("status") == "success" # Indica si la predicción fue exitosa o erronea
     update_metrics(claimed_rut, real_rut, prediction_success)
 
 def main() -> None:
@@ -31,10 +40,15 @@ def main() -> None:
     init_metrics()
     all_ruts = [rut for rut in os.listdir(EVAL_DIR) if os.path.isdir(os.path.join(EVAL_DIR, rut))]
 
-    for real_rut in tqdm(all_ruts, desc="🔎 Evaluating RUTs"):
+    # Para cada rut, se extraen las imagenes de su carpeta.
+    # En la segunda iteracion, se comprueba la imagen de la carpeta con el rut correspondiente (el rut del nombre de la carpeta)
+    # En la tercera iteracion, se comprueba la imagen de la carpeta con el resto de ruts.
+    # El funcionamiento es, para las imagenes de una carpeta, se prueba si se autoriza el acceso o no con cada uno de los ruts.
+    for real_rut in tqdm(all_ruts, desc="🔎 Evaluating RUTs"): 
         # Extract the real RUT folder path
         real_path = os.path.join(EVAL_DIR, real_rut)
         image_files = os.listdir(real_path) 
+        image_files.sort()
 
         # Iterate over each image in the RUT folder
         for image_name in tqdm(image_files, desc=f"📸 Images in RUT {real_rut}", leave=False):
@@ -46,10 +60,11 @@ def main() -> None:
             # Evaluate the image with a random different RUT (spoofing case)
             # Cases: TN, FP 
             suplantadores = [r for r in all_ruts if r != real_rut]
-            print(f"Usuario real: {real_rut}")
-            print(f"Usuarios suplantadores: {suplantadores}")
-            for fake_rut in suplantadores:
-                evaluate_image(image_path, claimed_rut=fake_rut, real_rut=real_rut)
+            with tqdm(suplantadores, desc=f"🕵️ Probando {image_name}", leave=False) as pbar:
+                for fake_rut in pbar:
+                    pbar.set_postfix({'Suplantador': fake_rut})
+                    # print(f"Evaluated {image_name} with claimed RUT '{fake_rut}' against real RUT '{real_rut}'.") #NOTE: Al descomentarlo se guardará en el txt resultante (permite observar en que imagen falla)
+                    evaluate_image(image_path, claimed_rut=fake_rut, real_rut=real_rut)
 
     report_metrics()
 

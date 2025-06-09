@@ -1,5 +1,5 @@
 # metrics.py
-from sklearn.metrics import classification_report
+from tabulate import tabulate
 
 # Global metric state
 # TP: El modelo predice correctamente el RUT de la persona.
@@ -11,48 +11,52 @@ TP = FP = TN = FN = 0
 y_true = []
 y_pred = []
 
-def init_metrics():
-    """Reinicia las métricas globales."""
-    global TP, FP, TN, FN, y_true, y_pred
+def init_metrics() -> None:
+    """Init global metrics."""
+    global TP, FP, TN, FN
     TP = FP = TN = FN = 0
-    y_true = []
-    y_pred = []
 
-def update_metrics(claimed_rut: str, real_rut: str, prediction_success: bool):
-    """Actualiza métricas según el resultado de la predicción."""
-    global TP, FP, TN, FN, y_true, y_pred
 
-    # Si el RUT real coincide con el RUT reclamado
+def update_metrics(claimed_rut: str, real_rut: str, prediction_success: bool) -> None:
+    """Update global metrics based on the evaluation result. 
+    Args:
+        claimed_rut (str): RUT that was used when sending the image.
+        real_rut (str): The actual RUT associated with the image (ground truth).
+        prediction_success (bool): True if the model successfully matched the RUT, False otherwise.
+
+    Returns:
+        None     
+    """
+    global TP, FP, TN, FN
+
+    # Se esta probando con las imagenes de la carpeta del RUT real.
+    # El claimed_rut corresponde a otro RUT con el que se prueba si la imagen permite el acceso.
+
+    # Cuando se prueba una imagen de una carpeta, con el RUT de dicha carpeta
     if real_rut == claimed_rut:
         if prediction_success:
-            TP += 1
-            y_true.append(real_rut)
-            y_pred.append(claimed_rut)
+            TP += 1 
         else:
-            FN += 1
-            # Excluir casos "unknown"
+            FN += 1 
             
-    # Si el RUT real no coincide con el RUT reclamado
+    # Cuando se prueba una imagen de una carpeta, con un RUT diferente al de la carpeta
     else:
         if prediction_success:
             FP += 1
-            y_true.append(real_rut)
-            y_pred.append(claimed_rut)
         else:
             TN += 1
-            # Excluir casos "unknown"
 
-def report_metrics():
-    """Imprime resumen de métricas con cálculos manuales y reporte sklearn."""
+def report_metrics() -> None:
+    """Report the evaluation metrics."""
     # Legit: Una persona que intenta ingresar con su propio RUT.
-    # Spoof: Una persona que intenta suplantar a otra persona.
+    # Spoof: Una persona que intenta suplantar a otra persona (imagen con un rut que no es el suyo).
 
     total_legit = TP + FN
     total_spoof = TN + FP
     total_cases = total_legit + total_spoof
     correct = TP + TN
 
-    # Cálculos de métricas por clase
+    # Cálculos de métricas 
     accuracy_legit = TP / total_legit if total_legit else None
     recall_legit = TP / (TP + FN) if (TP + FN) else None
     precision_legit = TP / (TP + FP) if (TP + FP) else None
@@ -71,7 +75,7 @@ def report_metrics():
         else None
     )
 
-    # Métricas generales (macro promedio)
+    # Métricas generales (macro)
     macro_accuracy = correct / total_cases if total_cases else None
 
     macro_precision = (
@@ -110,6 +114,42 @@ def report_metrics():
     print(f"  Precision (macro):      {macro_precision:.2%}")
     print(f"  F1-score (macro):       {macro_f1:.2%}")
 
-    print("\n=== METRICS (sklearn) ===")
-    #print(classification_report(y_true, y_pred, digits=4, zero_division=0))
+    headers = ["Clase", "Total", "TP/TN", "FP/FN", "Accuracy", "Recall", "Precision", "F1-score"]
+
+    table = [
+        [
+            "Legítimo",
+            total_legit,
+            TP,
+            FN,
+            f"{accuracy_legit:.2%}" if accuracy_legit is not None else "N/A",
+            f"{recall_legit:.2%}" if recall_legit is not None else "N/A",
+            f"{precision_legit:.2%}" if precision_legit is not None else "N/A",
+            f"{f1_legit:.2%}" if f1_legit is not None else "N/A",
+        ],
+        [
+            "Suplantador",
+            total_spoof,
+            TN,
+            FP,
+            f"{accuracy_spoof:.2%}" if accuracy_spoof is not None else "N/A",
+            f"{recall_spoof:.2%}" if recall_spoof is not None else "N/A",
+            f"{precision_spoof:.2%}" if precision_spoof is not None else "N/A",
+            f"{f1_spoof:.2%}" if f1_spoof is not None else "N/A",
+        ],
+        [
+            "Macro Promedio",
+            total_cases,
+            correct,
+            "-",
+            f"{macro_accuracy:.2%}" if macro_accuracy is not None else "N/A",
+            f"{macro_recall:.2%}",
+            f"{macro_precision:.2%}",
+            f"{macro_f1:.2%}",
+        ]
+    ]
+
+    print("\n=== 📊 MÉTRICAS DE EVALUACIÓN ===\n")
+    print(tabulate(table, headers=headers, tablefmt="fancy_grid"))
+
 
