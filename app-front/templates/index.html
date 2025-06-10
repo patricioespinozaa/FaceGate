@@ -13,6 +13,26 @@
     </div>
 </div>
 
+<!-- Instrucciones -->
+<div class="instructions-floating" id="instructions-box">
+    <h4 style="display: flex; justify-content: space-between; align-items: center;">
+        Instrucciones
+        <button id="toggle-button" onclick="toggleInstructions()" style="margin-left: 10px; background: none; border: none; font-size: 16px; cursor: pointer;">
+            ▲
+        </button>
+    </h4>
+    <div id="instructions-container" class="expanded">
+        <ol id="instructions-list">
+            <li>Verificar que la cámara esté activa, la imagen en vivo debe verse en pantalla.</li>
+            <li>Solicitar el RUT de la persona a verificar y posicionarla de forma que su rostro esté visible en pantalla.</li>
+            <li>Ingresar el RUT y presionar Enter.</li>
+            <li>Esperar respuesta del sistema.</li>
+            <li>Si hay coincidencia, se mostrará el nombre de la persona junto al mensaje “Acceso autorizado” y la pantalla se tornará verde.
+                <br> Si no hay coincidencia, se mostrará el mensaje “Identidad no verificada” o “Acceso denegado” y la pantalla se tornará roja.</li>
+        </ol>
+    </div>
+</div>
+
 <!--Cámara y Ucampus-->
 <div class="main-content">
     <div class="model-container">
@@ -71,5 +91,6 @@
 <script src="{{ url_for('static', filename='js/update_decision.js') }}"></script>
 <script src="{{ url_for('static', filename='js/rut_sender.js') }}"></script>
 <script src="{{ url_for('static', filename='js/camara_stream.js') }}"></script>
+<script src="{{ url_for('static', filename='js/toggle_instructions.js') }}"></script>
 
 {% endblock %}
