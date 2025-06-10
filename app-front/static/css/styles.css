@@ -261,16 +261,17 @@
 
 .instructions-floating {
     position: absolute;
-    top: 80px;
-    right: 20px;
-    width: 250px;
-    background-color: #ffe6ec;
+    top: 100px;   /* ajusta según tu diseño */
+    left: 780px;  /* alineado con el box de decisión */
+    width: 600px;
+    background: linear-gradient(135deg, #e1f7e7, #c8eed7);
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     font-size: 0.95em;
     z-index: 1000;
     text-align: justify;
+    transition: width 0.4s ease;
 }
 
 .instructions-floating h4 {
@@ -278,12 +279,20 @@
     font-weight: bold;
 }
 
+.instructions-floating.collapsed {
+    width: 300px;
+}
+
 #instructions-container {
     overflow: hidden;
-    max-height: 1000px;
+    max-height: 0;
     transition: max-height 0.4s ease;
 }
 
 #instructions-container.collapsed {
     max-height: 0;
+}
+
+#instructions-container.expanded {
+    max-height: 1000px;
 }

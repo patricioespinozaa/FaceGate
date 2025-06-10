@@ -14,14 +14,14 @@
 </div>
 
 <!-- Instrucciones -->
-<div class="instructions-floating">
+<div class="instructions-floating" id="instructions-box">
     <h4 style="display: flex; justify-content: space-between; align-items: center;">
         Instrucciones
         <button id="toggle-button" onclick="toggleInstructions()" style="margin-left: 10px; background: none; border: none; font-size: 16px; cursor: pointer;">
             ▲
         </button>
     </h4>
-    <div id="instructions-container">
+    <div id="instructions-container" class="expanded">
         <ol id="instructions-list">
             <li>Verificar que la cámara esté activa, la imagen en vivo debe verse en pantalla.</li>
             <li>Solicitar el RUT de la persona a verificar y posicionarla de forma que su rostro esté visible en pantalla.</li>
