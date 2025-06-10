@@ -175,11 +175,11 @@
 }
 
 .model-decision.success {
-    background-image: linear-gradient(to bottom right,#C3F2CB, rgb(108, 205, 149));
+    background-image: linear-gradient(135deg, #e1f7e7, #a3ebc0);;
 }
 
 .model-decision.error {
-    background-image: linear-gradient(to bottom right,#FFAFBD, rgb(239, 87, 87));
+    background-image: linear-gradient(to bottom right,#FFAFBD, rgb(248, 129, 129));
 }
 
 
@@ -269,7 +269,7 @@
     top: 100px;   /* ajusta según tu diseño */
     left: 780px;  /* alineado con el box de decisión */
     width: 600px;
-    background: linear-gradient(135deg, #e1f7e7, #c8eed7);
+    background: linear-gradient(135deg, #e1f7e7, #a3ebc0);
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
