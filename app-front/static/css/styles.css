@@ -1,5 +1,5 @@
 .navbar-nav {
-    background-color: #afd5ff;
+    background-image: linear-gradient(to right,#afd5ff, rgb(112, 162, 255));
 }
 
 .navbar-nav .nav-link {
@@ -167,7 +167,7 @@
 .model-decision {
     height: 80px;/* Match .box height */
     display: flex;
-    background-color: #afd5ff;
+    background-image: linear-gradient(to right,#afd5ff, rgb(112, 162, 255));
     align-items: center;
     justify-content: center;
     font-size: 18px;
@@ -175,12 +175,13 @@
 }
 
 .model-decision.success {
-    background-color: #C3F2CB;
+    background-image: linear-gradient(to bottom right,#C3F2CB, rgb(108, 205, 149));
 }
 
 .model-decision.error {
-    background-color: #FFAFBD;
+    background-image: linear-gradient(to bottom right,#FFAFBD, rgb(239, 87, 87));
 }
+
 
 #access-label {
     font-size: 18px;
