@@ -99,7 +99,7 @@
 }
 
 .model-container {
-    margin-top: 10px; /* Controls vertical spacing from the input field */
+    margin-top: 60px; /* Controls vertical spacing from the input field */
 }
 
 .model-row {
@@ -285,7 +285,8 @@
 }
 
 .instructions-floating.collapsed {
-    width: 300px;
+    width: 310px;
+    height: 75px;
 }
 
 #instructions-container {
