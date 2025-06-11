@@ -40,5 +40,18 @@ def copy_db_image_to_frontend(image_path: str) -> str:
     os.makedirs(carpeta_destino, exist_ok=True)
     nombre_foto = os.path.basename(image_path)
     destino = os.path.join(carpeta_destino, nombre_foto)
-    shutil.copy(image_path, destino)
+    if not os.path.exists(destino):
+        shutil.copy(image_path, destino)
     return nombre_foto
+
+def delete_uploaded_imagen(path_uploaded):
+    """
+    Elimina la imagen una vez que se obtienen los embeddings.
+
+    Args:
+        name_image: Nombre de imagen guardada en uploads.
+
+    path_uploaded, filename_uploaded = save_uploaded_image(uploaded_image, rut)
+    """
+    os.remove(path_uploaded)
+    print("Imagen removida")

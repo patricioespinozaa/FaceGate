@@ -49,6 +49,7 @@ def process_request(uploaded_image, rut: str):
     with open(path_uploaded, 'rb') as f:
         uploaded_bytes = f.read()
     embedding_uploaded = get_embedding(uploaded_bytes)
+    delete_uploaded_imagen(path_uploaded) 
     if embedding_uploaded is None:
             return jsonify({
                 "status": "error",
