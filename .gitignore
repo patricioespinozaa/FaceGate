@@ -6,7 +6,6 @@
 /output/
 /app-ia/DB_UCampus/
 /app-ia/test/src/
-/app-ia/__pycache__/
 
 # Server
 /apache-app-ia/
