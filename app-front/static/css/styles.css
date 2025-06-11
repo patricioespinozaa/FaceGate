@@ -99,7 +99,7 @@
 }
 
 .model-container {
-    margin-top: 10px; /* Controls vertical spacing from the input field */
+    margin-top: 60px; /* Controls vertical spacing from the input field */
 }
 
 .model-row {
@@ -175,11 +175,11 @@
 }
 
 .model-decision.success {
-    background-image: linear-gradient(to bottom right,#C3F2CB, rgb(108, 205, 149));
+    background-image: linear-gradient(135deg, #e1f7e7, #a3ebc0);;
 }
 
 .model-decision.error {
-    background-image: linear-gradient(to bottom right,#FFAFBD, rgb(239, 87, 87));
+    background-image: linear-gradient(to bottom right,#FFAFBD, rgb(248, 129, 129));
 }
 
 
@@ -261,4 +261,44 @@
     padding: 0;
     line-height: 0;
     background-color: #f4f4f4;
+}
+
+
+.instructions-floating {
+    position: absolute;
+    top: 100px;   /* ajusta según tu diseño */
+    left: 780px;  /* alineado con el box de decisión */
+    width: 600px;
+    background: linear-gradient(135deg, #e1f7e7, #a3ebc0);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-size: 0.95em;
+    z-index: 1000;
+    text-align: justify;
+    transition: width 0.4s ease;
+}
+
+.instructions-floating h4 {
+    margin-top: 0;
+    font-weight: bold;
+}
+
+.instructions-floating.collapsed {
+    width: 310px;
+    height: 75px;
+}
+
+#instructions-container {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.4s ease;
+}
+
+#instructions-container.collapsed {
+    max-height: 0;
+}
+
+#instructions-container.expanded {
+    max-height: 1000px;
 }

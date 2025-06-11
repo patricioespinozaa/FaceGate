@@ -6,7 +6,7 @@
 /output/
 /app-ia/DB_UCampus/
 /app-ia/test/src/
-
+/app-front/static/img/
 # Server
 /apache-app-ia/
 server_app-front.sh
