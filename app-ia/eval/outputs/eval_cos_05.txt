@@ -1,0 +1,35 @@
+
+=== EVALUATION RESULTS ===
+
+=== EVALUATION RESULTS ===
+[Legitimate attempts]
+  Total:           125
+  True Positives:  98
+  False Negatives: 27
+  Accuracy:        78.40%
+
+[Spoofing attempts]
+  Total:           125
+  True Negatives:  111
+  False Positives: 14
+  Accuracy:        88.80%
+
+[Overall]
+  Total evaluations: 250
+  Correct predictions: 209
+  Overall Accuracy:   83.60%
+
+=== METRICS (sklearn) ===
+              precision    recall  f1-score   support
+
+  19891604-8     0.8333    0.2000    0.3226        50
+  20625224-3     0.8947    0.3400    0.4928        50
+  20918356-0     1.0000    0.4200    0.5915        50
+  21095757-k     0.8333    0.5000    0.6250        50
+  21166885-7     0.8333    0.5000    0.6250        50
+     unknown     0.0000    0.0000    0.0000         0
+
+    accuracy                         0.3920       250
+   macro avg     0.7325    0.3267    0.4428       250
+weighted avg     0.8789    0.3920    0.5314       250
+

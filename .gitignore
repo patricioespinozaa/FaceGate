@@ -13,3 +13,8 @@ server_app-front.sh
 server_app-ia.sh
 /.vscode/
 /.ipynb_checkpoints/
+
+# Cache
+__pycache__/
+*.pyc
+*.py[cod]
