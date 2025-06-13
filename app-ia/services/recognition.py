@@ -6,6 +6,8 @@ from models.embeddings import get_embedding
 from models.distances import cosine_distance, euclidean_distance
 from utils.file_ops import save_uploaded_image, copy_db_image_to_frontend
 from flask import jsonify
+import glob
+
 
 def process_request(uploaded_image, rut: str):
     """
