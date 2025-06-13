@@ -314,3 +314,10 @@
     display: flex;
     justify-content: center;
 }
+
+@media screen and (min-width: 760px) and (max-width: 1300px) {
+    .student-view .model-row {
+      transform: scale(1.4);
+      transform-origin: top center;
+    }
+}
