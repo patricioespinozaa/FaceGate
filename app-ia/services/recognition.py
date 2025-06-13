@@ -72,6 +72,12 @@ def process_request(uploaded_image, rut: str):
     cosine_dist = cosine_distance(embedding_uploaded, embedding_db)
     euclidean_dist = euclidean_distance(embedding_uploaded, embedding_db)
 
+    # cambiar distancia coseno -> base métricas
+    if cosine_dist <= 0.5: 
+        update_recientes(path_uploaded,rut)
+    # en todos los casos borramos
+    delete_uploaded_imagen(path_uploaded) 
+
     return jsonify({
         "status": "success" if cosine_dist <= 0.5 else "error",
         "message": "Acceso permitido" if cosine_dist <= 0.5 else "Acceso denegado",
