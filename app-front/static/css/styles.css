@@ -314,8 +314,3 @@
     display: flex;
     justify-content: center;
 }
-
-.student-view .model-row {
-    transform: scale(1.4);
-    transform-origin: top center;
-}
