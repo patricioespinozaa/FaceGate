@@ -307,10 +307,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    margin-top: -40px;
 }
 
 .student-view .input-group-custom {
     display: flex;
     justify-content: center;
+}
+
+.student-view .model-row {
+    transform: scale(1.4);
+    transform-origin: top center;
 }
