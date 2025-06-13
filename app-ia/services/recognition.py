@@ -42,7 +42,7 @@ def process_request(uploaded_image, rut: str):
             }
         })
 
-    name, image_path = user['nombre'], user['path_foto']
+    name, image_path, folder_path = user['nombre'], user['path_foto'], user['path_carpeta_recientes']
     path_uploaded, filename_uploaded = save_uploaded_image(uploaded_image, rut)
     nombre_foto = copy_db_image_to_frontend(image_path)
 
@@ -69,7 +69,29 @@ def process_request(uploaded_image, rut: str):
         db_bytes = f.read()
     embedding_db = get_embedding(db_bytes)
 
+    # procesamos la carpeta de recientes 
+    embeddings_recientes=[]
+    archivos = sorted(glob.glob(os.path.join(folder_path, '*')))[:5]
+    for archivo in archivos: 
+        with open(archivo, 'rb') as f:
+            imagen_bytes = f.read()
+        emb = get_embedding(imagen_bytes)
+        if emb is not None: 
+            embeddings_recientes.append(emb)    
+
     cosine_dist = cosine_distance(embedding_uploaded, embedding_db)
+    #calculamos las distancias para la carpeta recientes 
+    recientes_cos_dist =  [
+        cosine_distance(embedding_uploaded, emb)
+        for emb in embeddings_recientes
+    ]
+    #promedio de las recientes
+    prom_cos_recientes = sum(recientes_cos_dist) / len(recientes_cos_dist) if recientes_cos_dist else 1.0
+    #ponderacion dando mas peso a ucampus
+    peso_db = 0.7
+    peso_recientes = 0.3
+    dist_pond = peso_db * cosine_dist + peso_recientes * prom_cos_recientes
+    
     euclidean_dist = euclidean_distance(embedding_uploaded, embedding_db)
 
     # cambiar distancia coseno -> base métricas
@@ -79,12 +101,14 @@ def process_request(uploaded_image, rut: str):
     delete_uploaded_imagen(path_uploaded) 
 
     return jsonify({
-        "status": "success" if cosine_dist <= 0.5 else "error",
-        "message": "Acceso permitido" if cosine_dist <= 0.5 else "Acceso denegado",
+        "status": "success" if dist_pond <= 0.5 else "error",
+        "message": "Acceso permitido" if dist_pond <= 0.5 else "Acceso denegado",
         "data": {
             "rut": rut,
             "nombre": name,
-            "distancia_coseno": cosine_dist,
+            "distnacia_coseno_ponderada": dist_pond,
+            "distancia_coseno_db": cosine_dist,
+            "distancia_coseno_reciente": recientes_cos_dist,
             "distancia_euclidiana": euclidean_dist,
         },
         "images": {
