@@ -302,3 +302,15 @@
 #instructions-container.expanded {
     max-height: 1000px;
 }
+
+.student-view .model-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.student-view .input-group-custom {
+    display: flex;
+    justify-content: center;
+}
