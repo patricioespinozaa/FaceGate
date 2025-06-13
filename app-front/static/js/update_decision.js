@@ -1,41 +1,60 @@
-
-function updateDecision(isVerified, studentName = '', studentPhoto = '', dataMessage = '', imageUrl = '') {
+function updateDecision(isVerified, studentName = '', studentPhoto = '', dataMessage = '') {
     const decisionBox = document.getElementById('decision-box');
     const accessLabel = document.getElementById('access-label');
     const decisionMessage = document.getElementById('decision-message');
     const ucampusContainer = document.getElementById('camera-body-ucampus');
 
     decisionBox.classList.remove('success', 'error');
-    decisionMessage.classList.remove('success', 'error');
+    decisionMessage.classList.remove('success', 'error');   
+
+    if (ucampusContainer) {
+        ucampusContainer.innerHTML = '';
+    }
+
+    const img = document.createElement('img');
 
     if (isVerified && dataMessage === "Acceso permitido") {
         decisionBox.classList.add('success');
         accessLabel.textContent = "ACCESO PERMITIDO";
+
         decisionMessage.textContent = studentName;
         decisionMessage.classList.add('success');
+
+        img.src = "/facegate/app-front/static/img/".concat(studentPhoto).concat(".jpeg");
+        img.alt = "Foto del estudiante";
+
     } else if (!isVerified && dataMessage === "Acceso denegado") {
         decisionBox.classList.add('error');
         accessLabel.textContent = "ACCESO DENEGADO";
+
         decisionMessage.textContent = "Verificación fallida";
         decisionMessage.classList.add('error');
+
+        img.src =  "/facegate/app-front/static/img/".concat(studentPhoto).concat(".jpeg");
+        img.alt = "Foto del estudiante";
+
     } else if (!isVerified && dataMessage === "Rut no encontrado") {
         decisionBox.classList.add('error');
         accessLabel.textContent = "ACCESO DENEGADO";
+
         decisionMessage.textContent = "Rut no encontrado";
         decisionMessage.classList.add('error');
+
+        img.src = "/facegate/app-front/static/img/plain.png";
+        img.alt = "Imagen de error";
+
     } else {
         decisionBox.classList.add('error');
         accessLabel.textContent = "ACCESO DENEGADO";
+
         decisionMessage.textContent = "Verificación Fallida";
         decisionMessage.classList.add('error');
-    }
 
-    // Mostrar imagen solo si existe contenedor
-    if (ucampusContainer && imageUrl) {
-        ucampusContainer.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = imageUrl;
-        img.alt = "Foto del estudiante";
+        img.src = "/facegate/app-front/static/img/plain.png";
+        img.alt = "Imagen de error";
+    }
+    //  si esta ucampus container...
+    if (ucampusContainer) {
         ucampusContainer.appendChild(img);
     }
 }
