@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from services.database import get_user_by_rut
 from models.embeddings import get_embedding
 from models.distances import cosine_distance, euclidean_distance
-from utils.file_ops import save_uploaded_image, copy_db_image_to_frontend
+from utils.file_ops import save_uploaded_image, copy_db_image_to_frontend, update_recientes, delete_uploaded_imagen
 from flask import jsonify
 
 def process_request(uploaded_image, rut: str):
@@ -41,7 +41,7 @@ def process_request(uploaded_image, rut: str):
                 "distancia_euclidiana": None
             }
         })
-
+    
     name, image_path = user['nombre'], user['path_foto']
     path_uploaded, filename_uploaded = save_uploaded_image(uploaded_image, rut)
     nombre_foto = copy_db_image_to_frontend(image_path)
@@ -63,15 +63,13 @@ def process_request(uploaded_image, rut: str):
                     "uploaded_url": f"/static/uploads/{filename_uploaded}",
                     "db_url": f"../app-front/static/img/{nombre_foto}"
                 }
-            })
-
+            })      
     with open(image_path, 'rb') as f:
         db_bytes = f.read()
     embedding_db = get_embedding(db_bytes)
 
     cosine_dist = cosine_distance(embedding_uploaded, embedding_db)
-    euclidean_dist = euclidean_distance(embedding_uploaded, embedding_db)
-
+    euclidean_dist = euclidean_distance(embedding_uploaded, embedding_db)    
     # cambiar distancia coseno -> base métricas
     if cosine_dist <= 0.5: 
         update_recientes(path_uploaded,rut)
