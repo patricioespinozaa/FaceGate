@@ -45,6 +45,7 @@ def process_request(uploaded_image, rut: str):
         })
 
     name, image_path, folder_path = user['nombre'], user['path_foto'], user['path_carpeta_recientes']
+
     path_uploaded, filename_uploaded = save_uploaded_image(uploaded_image, rut)
     nombre_foto = copy_db_image_to_frontend(image_path)
 
@@ -66,8 +67,7 @@ def process_request(uploaded_image, rut: str):
                     "uploaded_url": f"/static/uploads/{filename_uploaded}",
                     "db_url": f"../app-front/static/img/{nombre_foto}"
                 }
-            })
-
+            })      
     with open(image_path, 'rb') as f:
         db_bytes = f.read()
     embedding_db = get_embedding(db_bytes)
@@ -83,6 +83,7 @@ def process_request(uploaded_image, rut: str):
             embeddings_recientes.append(emb)    
 
     cosine_dist = cosine_distance(embedding_uploaded, embedding_db)
+
     #calculamos las distancias para la carpeta recientes 
     recientes_cos_dist =  [
         cosine_distance(embedding_uploaded, emb)
