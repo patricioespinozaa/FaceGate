@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from services.database import get_user_by_rut
 from models.embeddings import get_embedding
 from models.distances import cosine_distance, euclidean_distance
-from utils.file_ops import save_uploaded_image, copy_db_image_to_frontend
+from utils.file_ops import save_uploaded_image, copy_db_image_to_frontend, update_recientes, delete_uploaded_imagen
 from flask import jsonify
 import glob
 
@@ -51,6 +51,7 @@ def process_request(uploaded_image, rut: str):
     with open(path_uploaded, 'rb') as f:
         uploaded_bytes = f.read()
     embedding_uploaded = get_embedding(uploaded_bytes)
+
     if embedding_uploaded is None:
             return jsonify({
                 "status": "error",
@@ -108,7 +109,7 @@ def process_request(uploaded_image, rut: str):
         "data": {
             "rut": rut,
             "nombre": name,
-            "distnacia_coseno_ponderada": dist_pond,
+            "distancia_coseno_ponderada": dist_pond,
             "distancia_coseno_db": cosine_dist,
             "distancia_coseno_reciente": recientes_cos_dist,
             "distancia_euclidiana": euclidean_dist,

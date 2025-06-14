@@ -15,6 +15,6 @@ def get_user_by_rut(rut: str) -> Optional[Dict[str, Any]]:
     """
     conn = mysql.connector.connect(**DB_CREDENTIALS)
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT nombre, path_foto FROM ucampus WHERE rut = %s", (rut,))
+    cursor.execute("SELECT nombre, path_foto, path_carpeta_recientes FROM ucampus WHERE rut = %s", (rut,))
     result = cursor.fetchone()
     return result
