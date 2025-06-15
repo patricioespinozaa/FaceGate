@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Logica para recibir la imagen tomada
     let pollingIntervalId = null;
+    capturedPhoto.style.display = 'none';
     function startPolling() {
         // Solo si no hay uno activo
         if (pollingIntervalId !== null) return;
@@ -54,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             clearInterval(pollingIntervalId); // Detener polling anterior
                             pollingIntervalId = null; // Reset flag
                             capturedPhoto.style.display = 'none'; // ocultar imagen anterior
-                        }, 3000);
+                        }, 5000);
 
                     })
                     .catch(error => {
