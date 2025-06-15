@@ -101,6 +101,14 @@ def process_request(uploaded_image, rut: str):
     # cambiar distancia coseno -> base métricas
     if cosine_dist <= 0.5: 
         update_recientes(path_uploaded,rut)
+
+    capture_dir = os.path.join(os.path.dirname(path_uploaded), '..', 'captured')
+    capture_dir = os.path.abspath(capture_dir)
+    os.makedirs(capture_dir, exist_ok=True)
+    last_capture_path = os.path.join(capture_dir, 'last_capture.jpg')
+
+    with open(path_uploaded, 'rb') as src, open(last_capture_path, 'wb') as dst:
+        dst.write(src.read())
     # en todos los casos borramos
     delete_uploaded_imagen(path_uploaded) 
 
