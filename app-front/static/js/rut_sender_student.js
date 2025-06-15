@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         setTimeout(() => {
                             rutInput.disabled = false;
                             rutInput.value = ''; // Limpiar el campo para reusar
+                            confirmationMessage.textContent = '';
                             clearInterval(pollingIntervalId); // Detener polling anterior
                             pollingIntervalId = null; // Reset flag
                             capturedPhoto.style.display = 'none'; // ocultar imagen anterior
