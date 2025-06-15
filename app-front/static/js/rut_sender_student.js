@@ -37,7 +37,8 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 if (data.image_url) {
-                    capturedPhoto.src = data.image_url + '?' + new Date().getTime(); // evita cache
+                    // Usa la URL devuelta (siempre es /facegate/app-ia/last_capture)
+                    capturedPhoto.src = 'https://grupo3.juan.cl' + data.image_url + '?' + new Date().getTime();
                     capturedPhoto.style.display = 'block';
                 }
             })

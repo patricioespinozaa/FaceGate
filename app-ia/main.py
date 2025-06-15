@@ -1,5 +1,5 @@
 import os
-from flask import request, jsonify
+from flask import request, jsonify, send_file
 from app import app
 from config.settings import PORT
 from services.recognition import process_request
@@ -15,11 +15,10 @@ def predict():
         return {"status": "error", "message": "No image received"}
 
 
-    capture_dir = os.path.join(app.static_folder, 'captured')
-    os.makedirs(capture_dir, exist_ok=True)
-    filename = "last_capture.jpg"
-    filepath = os.path.join(capture_dir, filename)
-    uploaded_image.save(filepath)
+    data_capture_dir = os.path.join(app.root_path, 'data', 'captured')
+    os.makedirs(data_capture_dir, exist_ok=True)
+    capture_path = os.path.join(data_capture_dir, 'last_capture.jpg')
+    uploaded_image.save(capture_path)
 
     global ultimo_rut
     ultimo_rut = None
@@ -42,8 +41,15 @@ def get_rut():
 
 @app.route('/facegate/app-ia/get_last_image', methods=['GET'])
 def get_last_image():
-    return jsonify({"image_url": "/static/captured/last_capture.jpg"})
+    return jsonify({"image_url": "/facegate/app-ia/last_capture"})
 
+
+@app.route('/facegate/app-ia/last_capture', methods=['GET'])
+def serve_last_capture():
+    capture_path = os.path.join(app.root_path, 'data', 'captured', 'last_capture.jpg')
+    if not os.path.exists(capture_path):
+        return jsonify({"status": "error", "message": "No capture available"}), 404
+    return send_file(capture_path, mimetype='image/jpeg')
 
 if __name__ == '__main__':
     app.run(port=PORT, debug=True)
