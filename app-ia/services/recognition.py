@@ -47,6 +47,14 @@ def process_request(uploaded_image, rut: str):
     name, image_path, folder_path = user['nombre'], user['path_foto'], user['path_carpeta_recientes']
 
     path_uploaded, filename_uploaded = save_uploaded_image(uploaded_image, rut)
+
+    capture_dir = os.path.join(current_app.root_path, 'data', 'captured')
+    os.makedirs(capture_dir, exist_ok=True)
+    last_capture_path = os.path.join(capture_dir, 'last_capture.jpg')
+
+    with open(path_uploaded, 'rb') as src, open(last_capture_path, 'wb') as dst:
+        dst.write(src.read())
+
     nombre_foto = copy_db_image_to_frontend(image_path)
 
     with open(path_uploaded, 'rb') as f:
@@ -102,12 +110,6 @@ def process_request(uploaded_image, rut: str):
     if cosine_dist <= 0.5: 
         update_recientes(path_uploaded,rut)
 
-    capture_dir = os.path.join(current_app.root_path, 'data', 'captured')
-    os.makedirs(capture_dir, exist_ok=True)
-    last_capture_path = os.path.join(capture_dir, 'last_capture.jpg')
-
-    with open(path_uploaded, 'rb') as src, open(last_capture_path, 'wb') as dst:
-        dst.write(src.read())
     # en todos los casos borramos
     delete_uploaded_imagen(path_uploaded) 
 
