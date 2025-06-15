@@ -17,13 +17,14 @@
                     <input type="text" id="rut" inputmode="numeric" style="width: 300px" placeholder="12345678-9">
                 </div>
 
-                <!-- Decisión -->
-                <div class="decision-column">
-                    <div class="box model-decision" id="decision-box">
-                        <div id="access-label">Acércate a la cámara</div>
-                    </div>
-                    <div id="decision-message" class="decision-message"></div>
+                <!-- Foto capturada -->
+                <div style="margin-top: 20px;">
+                    <img id="captured-photo" src="" alt="Tu foto se mostrará aquí" style="max-width: 400px; display: none;">
                 </div>
+
+                <!-- Mensaje de confirmación -->
+                <div id="confirmation-message" style="margin-top: 20px; font-size: 20px;"></div>
+
             </div>
         </div>
     </div>
@@ -31,8 +32,5 @@
 {% endblock %}
 
 {% block scripts %}
-
-<script src="{{ url_for('static', filename='js/update_decision.js') }}"></script>
-<script src="{{ url_for('static', filename='js/rut_sender.js') }}"></script>
-
+<script src="{{ url_for('static', filename='js/rut_sender_student.js') }}"></script>
 {% endblock %}

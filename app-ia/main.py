@@ -1,3 +1,4 @@
+import os
 from flask import request, jsonify
 from app import app
 from config.settings import PORT
@@ -12,6 +13,13 @@ def predict():
     uploaded_image = request.files.get('imagen')
     if uploaded_image is None:
         return {"status": "error", "message": "No image received"}
+
+
+    capture_dir = os.path.join(app.static_folder, 'captured')
+    os.makedirs(capture_dir, exist_ok=True)
+    filename = "last_capture.jpg"
+    filepath = os.path.join(capture_dir, filename)
+    uploaded_image.save(filepath)
 
     global ultimo_rut
     ultimo_rut = None
@@ -31,6 +39,10 @@ def store_rut():
 @app.route('/facegate/app-ia/get_rut', methods=['GET'])
 def get_rut():
     return jsonify({"rut": ultimo_rut})
+
+@app.route('/facegate/app-ia/get_last_image', methods=['GET'])
+def get_last_image():
+    return jsonify({"image_url": "/static/captured/last_capture.jpg"})
 
 
 if __name__ == '__main__':
