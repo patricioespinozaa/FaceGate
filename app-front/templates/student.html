@@ -17,16 +17,6 @@
                     <input type="text" id="rut" inputmode="numeric" style="width: 300px" placeholder="12345678-9">
                 </div>
 
-                <!-- Cámara -->
-                <div class="box">
-                    <div class="box-header">
-                        <p class="box-title">Cámara</p>
-                    </div>
-                    <div class="box-body" id="camera-body-camara">
-                        <video autoplay="true" id="video-stream"></video>
-                    </div>
-                </div>
-
                 <!-- Decisión -->
                 <div class="decision-column">
                     <div class="box model-decision" id="decision-box">
@@ -42,9 +32,7 @@
 
 {% block scripts %}
 
-<script src="{{ url_for('static', filename='js/upload_image.js') }}"></script>
 <script src="{{ url_for('static', filename='js/update_decision.js') }}"></script>
 <script src="{{ url_for('static', filename='js/rut_sender.js') }}"></script>
-<script src="{{ url_for('static', filename='js/camara_stream.js') }}"></script>
 
 {% endblock %}
