@@ -33,6 +33,10 @@ def process_request(uploaded_image, rut: str):
     
     user = get_user_by_rut(rut)
     if not user:
+        capture_dir = os.path.join(current_app.root_path, 'data', 'captured')
+        last_capture_path = os.path.join(capture_dir, 'last_capture.jpg')
+        if os.path.exists(last_capture_path):
+            os.remove(last_capture_path)
         return jsonify({
             "status": "error",
             "message": "Rut no encontrado",
