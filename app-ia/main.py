@@ -1,3 +1,4 @@
+import os
 from flask import request, jsonify, send_file
 from app import app
 from config.settings import PORT
@@ -31,6 +32,18 @@ def store_rut():
 @app.route('/facegate/app-ia/get_rut', methods=['GET'])
 def get_rut():
     return jsonify({"rut": ultimo_rut})
+
+@app.route('/facegate/app-ia/get_last_image', methods=['GET'])
+def get_last_image():
+    return jsonify({"image_url": "/facegate/app-ia/last_capture"})
+
+
+@app.route('/facegate/app-ia/last_capture', methods=['GET'])
+def serve_last_capture():
+    capture_path = os.path.join(app.root_path, 'data', 'captured', 'last_capture.jpg')
+    if not os.path.exists(capture_path):
+        return jsonify({"status": "error", "message": "No capture available"}), 404
+    return send_file(capture_path, mimetype='image/jpeg')
 
 if __name__ == '__main__':
     app.run(port=PORT, debug=True)

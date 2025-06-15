@@ -33,8 +33,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Polling para mostrar la última foto capturada por el guardia
     setInterval(() => {
-        // Evitar cache con timestamp
-        capturedPhoto.src = '/static/captured/last_capture.jpg?' + new Date().getTime();
-        capturedPhoto.style.display = 'block';
+        fetch('https://grupo3.juan.cl/facegate/app-ia/get_last_image')
+            .then(res => res.json())
+            .then(data => {
+                if (data.image_url) {
+                    // Usa la URL devuelta (siempre es /facegate/app-ia/last_capture)
+                    capturedPhoto.src = 'https://grupo3.juan.cl' + data.image_url + '?' + new Date().getTime();
+                    capturedPhoto.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error obteniendo imagen:', error);
+            });
     }, 3000); // cada 3 segundos
 });
