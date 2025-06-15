@@ -48,14 +48,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         // Empieza el polling de imagen SOLO después de enviar
                         startPolling();
 
-                        // ✅ Desbloquear input después de 3 seg para permitir nuevo intento
+                        // ✅ Desbloquear input después de 10 seg para permitir nuevo intento
                         setTimeout(() => {
                             rutInput.disabled = false;
                             rutInput.value = ''; // Limpiar el campo para reusar
                             clearInterval(pollingIntervalId); // Detener polling anterior
                             pollingIntervalId = null; // Reset flag
                             capturedPhoto.style.display = 'none'; // ocultar imagen anterior
-                        }, 5000);
+                        }, 10000);
 
                     })
                     .catch(error => {
