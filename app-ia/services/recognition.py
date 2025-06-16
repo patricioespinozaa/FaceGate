@@ -113,7 +113,6 @@ def process_request(uploaded_image, rut: str):
     # cambiar distancia coseno -> base métricas
     if cosine_dist <= 0.5: 
         update_recientes(path_uploaded,rut)
-
     # en todos los casos borramos
     delete_uploaded_imagen(path_uploaded) 
 
