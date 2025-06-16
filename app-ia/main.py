@@ -29,7 +29,7 @@ def predict():
     last_result["image_url"] = "/facegate/app-ia/last_capture"
     last_result["predict_result"] = response_json.get("status", "error")
 
-    return jsonify(response)
+    return response
 
 @app.route('/facegate/app-ia/store_rut', methods=['POST'])
 def store_rut():
