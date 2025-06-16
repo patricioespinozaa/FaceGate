@@ -12,7 +12,7 @@
         <div class="model-container">
             <div class="model-row">
 
-                <!-- Ingresar RUT -->
+                <!--Ingresar Rut -->
                 <div class="input-group-custom">
                     <input type="text" id="rut" inputmode="numeric" style="width: 300px" placeholder="12345678-9">
                 </div>
@@ -22,9 +22,13 @@
                     <img id="captured-photo" src="" alt="Tu foto se mostrará aquí" style="max-width: 400px; display: none;">
                 </div>
 
-                <!-- Mensaje de confirmación -->
-                <div id="confirmation-message" style="margin-top: 20px; font-size: 20px;"></div>
-
+                <!-- Decisión -->
+                <div class="decision-column">
+                    <div class="box model-decision" id="decision-box">
+                        <div id="access-label">Acércate a la cámara</div>
+                    </div>
+                    <div id="decision-message" class="decision-message"></div>
+                </div>
             </div>
         </div>
     </div>
