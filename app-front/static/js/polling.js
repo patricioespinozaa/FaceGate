@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             // Obtener el último RUT desde el backend
             const response = await fetch('https://grupo3.juan.cl/facegate/app-ia/get_result');
-            const result = await resResult.json();
+            const result = await response.json();
             const rut = result.rut;
 
             if (!rut) {
