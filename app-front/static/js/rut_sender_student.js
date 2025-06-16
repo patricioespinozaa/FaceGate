@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const rutInput = document.getElementById('rut');
-    const confirmationMessage = document.getElementById('confirmation-message');
+    const decisionBox = document.getElementById('decision-box');
+    const accessLabel = document.getElementById('access-label');
     const capturedPhoto = document.getElementById('captured-photo');
 
     // Logica para recibir la imagen tomada
@@ -42,8 +43,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then(res => res.json())
                     .then(data => {
                         console.log('✅ RUT guardado:', data);
-                        confirmationMessage.textContent = 'RUT enviado. Por favor espera mientras se verifica.';
                         rutInput.disabled = true;
+
+                        // Cambia el decision box a estado "En proceso"
+                        decisionBox.classList.remove('success', 'error');
+                        accessLabel.textContent = 'RUT enviado. Verificando...';
 
                         // Empieza el polling de imagen SOLO después de enviar
                         startPolling();
@@ -52,7 +56,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         setTimeout(() => {
                             rutInput.disabled = false;
                             rutInput.value = ''; // Limpiar el campo para reusar
-                            confirmationMessage.textContent = '';
+                            accessLabel.textContent = 'Acércate a la cámara';
+                            decisionBox.classList.remove('success', 'error');
                             clearInterval(pollingIntervalId); // Detener polling anterior
                             pollingIntervalId = null; // Reset flag
                             capturedPhoto.style.display = 'none'; // ocultar imagen anterior
@@ -61,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     })
                     .catch(error => {
                         console.error('❌ Error al enviar RUT:', error);
+                        decisionBox.classList.add('error');
                         confirmationMessage.textContent = 'Error al enviar tu RUT. Inténtalo de nuevo.';
                     });
             }
