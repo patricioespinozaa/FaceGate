@@ -25,9 +25,9 @@ def predict():
 
     response = process_request(uploaded_image, rut)
 
-    last_result["rut"] = rut
+    response_json = response.get_json()
     last_result["image_url"] = "/facegate/app-ia/last_capture"
-    last_result["predict_result"] = response.get("status", "error")
+    last_result["predict_result"] = response_json.get("status", "error")
 
     return jsonify(response)
 
