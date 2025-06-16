@@ -15,7 +15,7 @@ last_result = {
 def predict():
     global last_result
     if last_result["predict_result"] != "pending":
-        return jsonify({"status": "ignore", "message": "Already processed."})
+        return jsonify(last_result)
 
     rut = request.form.get('rut')
     uploaded_image = request.files.get('imagen')
