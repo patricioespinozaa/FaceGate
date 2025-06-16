@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const video = document.getElementById('video-stream');
     const rutInput = document.getElementById('rut');
     const pollingInterval = 3000; // cada 3 segundos
-
+    let fotoEnviada = false;
     async function poll() {
         try {
             // Obtener el último RUT desde el backend
@@ -12,15 +12,44 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (!rut) {
                 console.log("⏳ No hay RUT pendiente. Polling continúa...");
+                fotoEnviada = false; // Reset flag si no hay RUT
                 return;
             }
 
             // Mostrar RUT en el input del guardia
             rutInput.value = rut;
 
-            // Verificar estado: solo enviar foto si está pending
+            // Si ya enviaste foto en este intento, espera solo resultado
+            if (fotoEnviada) {
+                console.log("⏳ Foto ya enviada, esperando resultado...");
+
+                // Si detecta fin del ciclo, resetea flag para permitir nuevo intento
+                if (result.predict_result !== 'pending') {
+
+                    setTimeout(() => {
+                        rutInput.value = ""; // Limpia input visible del guardia
+
+                        const decisionBox = document.getElementById('decision-box');
+                        const accessLabel = document.getElementById('access-label');
+                        const decisionMessage = document.getElementById('decision-message');
+
+                        decisionBox.classList.remove('success', 'error');
+                        accessLabel.textContent = "Acércate a la cámara";
+                        decisionMessage.textContent = "";
+                        decisionMessage.classList.remove('success', 'error');
+
+                    }, 5000);
+
+                    fotoEnviada = false;
+                    console.log("🔄 Ciclo finalizado, listo para nuevo RUT.");
+                }
+                return;
+            }
+
+            // Si no es pending, reset flag
             if (result.predict_result !== 'pending') {
-                console.log("✅ Ya verificado, no se envía más foto.");
+                console.log("✅ Intento finalizado, sin envío de foto.");
+                fotoEnviada = false;
                 return;
             }
 
@@ -34,7 +63,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const blob = await capturarFoto(video);
             if (!blob) return;
 
-            // Enviar foto + RUT a /predict
             const formData = new FormData();
             formData.append('rut', rut);
             formData.append('imagen', blob, 'captura.jpeg');
@@ -46,27 +74,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(res => res.json())
                 .then(data => {
                     console.log('✅ Respuesta backend:', data);
-                    updateDecision(
-                        data.status === 'success',
-                        data.data.nombre,
-                        data.data.rut,
-                        data.message
-                    );
 
-                    // setTimeout 5 seg para no tener que refrescar la vista
-                    setTimeout(() => {
-                        rutInput.value = ""; // Limpia input visible del guardia
+                    if (data.status === 'success') {
+                        updateDecision(true, data.data?.nombre ?? "", data.data?.rut ?? "", data.message);
+                    } else {
+                        updateDecision(false, "", "", data.message);
+                    }
 
-                        // Reiniciar caja de decisión:
-                        const decisionBox = document.getElementById('decision-box');
-                        const accessLabel = document.getElementById('access-label');
-                        const decisionMessage = document.getElementById('decision-message');
-
-                        decisionBox.classList.remove('success', 'error');
-                        accessLabel.textContent = "Acércate a la cámara";
-                        decisionMessage.textContent = "";
-                        decisionMessage.classList.remove('success', 'error');
-                    }, 5000); // espera 5 segundos antes de limpiar
+                    // Marca como enviada
+                    fotoEnviada = true;
 
                 })
                 .catch(error => {
@@ -105,6 +121,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Iniciar el polling
+    // Iniciar polling loop
     setInterval(poll, pollingInterval);
 });
