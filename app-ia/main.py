@@ -5,11 +5,7 @@ from config.settings import PORT
 from services.recognition import process_request
 
 # Variable global para almacenar el último RUT
-last_result = {
-    "rut": None,
-    "image_url": None,
-    "predict_result": "pending"
-}
+ultimo_rut = None
 
 @app.route('/facegate/app-ia/predict', methods=['POST'])
 def predict():
@@ -18,35 +14,29 @@ def predict():
     if uploaded_image is None:
         return {"status": "error", "message": "No image received"}
 
-    global last_result
+    global ultimo_rut
+    ultimo_rut = None
 
-    response = process_request(uploaded_image, rut)
-
-    last_result["rut"] = rut
-    last_result["image_url"] = "/facegate/app-ia/last_capture"
-    last_result["predict_result"] = response.get("status", "error")
-
-    return response
+    return process_request(uploaded_image, rut)
 
 @app.route('/facegate/app-ia/store_rut', methods=['POST'])
 def store_rut():
-    global last_result
+    global ultimo_rut
     rut = request.form.get('rut')
     if rut:
-        last_result["rut"] = rut
+        ultimo_rut = rut
         return jsonify({"status": "success", "rut": rut})
     else:
         return jsonify({"status": "error", "message": "No RUT provided"})
 
 @app.route('/facegate/app-ia/get_rut', methods=['GET'])
 def get_rut():
-    global last_result
-    return jsonify({"rut": last_result["rut"]})
+    return jsonify({"rut": ultimo_rut})
 
-@app.route('/facegate/app-ia/get_result', methods=['GET'])
-def get_result():
-    global last_result
-    return jsonify(last_result)
+@app.route('/facegate/app-ia/get_last_image', methods=['GET'])
+def get_last_image():
+    return jsonify({"image_url": "/facegate/app-ia/last_capture"})
+
 
 @app.route('/facegate/app-ia/last_capture', methods=['GET'])
 def serve_last_capture():

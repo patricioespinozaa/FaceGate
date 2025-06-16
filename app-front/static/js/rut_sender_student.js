@@ -12,26 +12,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (pollingIntervalId !== null) return;
 
         pollingIntervalId = setInterval(() => {
-            fetch('https://grupo3.juan.cl/facegate/app-ia/get_result')
+            fetch('https://grupo3.juan.cl/facegate/app-ia/get_last_image')
                 .then(res => res.json())
                 .then(data => {
                     if (data.image_url) {
                         capturedPhoto.src = 'https://grupo3.juan.cl' + data.image_url + '?' + new Date().getTime();
                         capturedPhoto.style.display = 'block';
-                    }
-                    // Cambiar estado del decision box
-                    if (data.predict_result === 'success') {
-                        decisionBox.classList.add('success');
-                        decisionBox.classList.remove('error');
-                        accessLabel.textContent = 'Acceso autorizado';
-                    } else if (data.predict_result === 'error') {
-                        decisionBox.classList.add('error');
-                        decisionBox.classList.remove('success');
-                        accessLabel.textContent = 'Acceso denegado';
-                    } else {
-                        // pending o indefinido
-                        decisionBox.classList.remove('success', 'error');
-                        accessLabel.textContent = 'Verificando...';
                     }
                 })
                 .catch(error => {
@@ -81,8 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     .catch(error => {
                         console.error('❌ Error al enviar RUT:', error);
                         decisionBox.classList.add('error');
-                        decisionBox.classList.remove('success');
-                        accessLabel.textContent = 'Error al enviar tu RUT. Inténtalo de nuevo.';
+                        confirmationMessage.textContent = 'Error al enviar tu RUT. Inténtalo de nuevo.';
                     });
             }
         });
