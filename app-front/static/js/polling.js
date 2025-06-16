@@ -5,10 +5,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function poll() {
         try {
-            // 1) Obtener el último RUT desde el backend
-            const response = await fetch('https://grupo3.juan.cl/facegate/app-ia/get_rut');
-            const data = await response.json();
-            const rut = data.rut;
+            // Obtener el último RUT desde el backend
+            const response = await fetch('https://grupo3.juan.cl/facegate/app-ia/get_result');
+            const result = await resResult.json();
+            const rut = result.rut;
 
             if (!rut) {
                 console.log("⏳ No hay RUT pendiente. Polling continúa...");
@@ -18,17 +18,23 @@ document.addEventListener('DOMContentLoaded', function () {
             // Mostrar RUT en el input del guardia
             rutInput.value = rut;
 
-            // 2) Verificar que la cámara esté lista
+            // Verificar estado: solo enviar foto si está pending
+            if (result.predict_result !== 'pending') {
+                console.log("✅ Ya verificado, no se envía más foto.");
+                return;
+            }
+
+            // Verificar que la cámara esté lista
             if (!video || video.readyState < 2) {
                 console.warn("⚠️ Cámara no lista todavía.");
                 return;
             }
 
-            // 3) Capturar foto
+            // Capturar foto
             const blob = await capturarFoto(video);
             if (!blob) return;
 
-            // 4) Enviar foto + RUT a /predict
+            // Enviar foto + RUT a /predict
             const formData = new FormData();
             formData.append('rut', rut);
             formData.append('imagen', blob, 'captura.jpeg');

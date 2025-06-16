@@ -21,7 +21,6 @@ def predict():
     global last_result
     last_result["rut"] = rut
     last_result["image_url"] = None
-    last_result["predict_result"] = "pending"
 
     response = process_request(uploaded_image, rut)
 
@@ -29,7 +28,7 @@ def predict():
     last_result["image_url"] = "/facegate/app-ia/last_capture"
     last_result["predict_result"] = response_json.get("status", "error")
 
-    return jsonify(response)
+    return response
 
 @app.route('/facegate/app-ia/store_rut', methods=['POST'])
 def store_rut():
@@ -37,14 +36,11 @@ def store_rut():
     rut = request.form.get('rut')
     if rut:
         last_result["rut"] = rut
+        last_result["image_url"] = None
+        last_result["predict_result"] = "pending"
         return jsonify({"status": "success", "rut": rut})
     else:
         return jsonify({"status": "error", "message": "No RUT provided"})
-
-@app.route('/facegate/app-ia/get_rut', methods=['GET'])
-def get_rut():
-    global last_result
-    return jsonify({"rut": last_result["rut"]})
 
 @app.route('/facegate/app-ia/get_result', methods=['GET'])
 def get_result():
