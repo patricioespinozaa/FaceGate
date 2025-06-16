@@ -38,18 +38,21 @@ document.addEventListener('DOMContentLoaded', function () {
                         decisionMessage.textContent = "";
                         decisionMessage.classList.remove('success', 'error');
 
+                        const cameraBodyUcampus = document.getElementById('camera-body-ucampus');
+                        cameraBodyUcampus.innerHTML = '<div class="spinner" id="camera-spinner"></div>';
+
                     }, 5000);
 
                     fotoEnviada = false;
-                    console.log("🔄 Ciclo finalizado, listo para nuevo RUT.");
+                    console.log("⏳ No hay RUT pendiente. Polling continúa...");
                 }
                 return;
             }
 
             // Si no es pending, reset flag
             if (result.predict_result !== 'pending') {
-                console.log("✅ Intento finalizado, sin envío de foto.");
                 fotoEnviada = false;
+                console.log("⏳ No hay RUT pendiente. Polling continúa...");
                 return;
             }
 
