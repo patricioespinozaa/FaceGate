@@ -4,26 +4,45 @@ document.addEventListener('DOMContentLoaded', function () {
     const accessLabel = document.getElementById('access-label');
     const capturedPhoto = document.getElementById('captured-photo');
 
-    // Logica para recibir la imagen tomada
-    let pollingIntervalId = null;
+    // Ocultar foto al inicio
     capturedPhoto.style.display = 'none';
-    function startPolling() {
-        // Solo si no hay uno activo
-        if (pollingIntervalId !== null) return;
 
-        pollingIntervalId = setInterval(() => {
-            fetch('https://grupo3.juan.cl/facegate/app-ia/get_last_image')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.image_url) {
-                        capturedPhoto.src = 'https://grupo3.juan.cl' + data.image_url + '?' + new Date().getTime();
-                        capturedPhoto.style.display = 'block';
-                    }
-                })
-                .catch(error => {
-                    console.error('❌ Error obteniendo imagen:', error);
-                });
-        }, 3000);
+    // Lógica: después de enviar RUT, espera y consulta /get_result
+    async function checkResult(rut) {
+        // Esperar 5 s para dar tiempo a capturar foto y verificar
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
+        fetch(`https://grupo3.juan.cl/facegate/app-ia/get_result?rut=${rut}`)
+            .then(res => res.json())
+            .then(data => {
+                console.log('🔄 Resultado:', data);
+
+                if (data.status === 'pending') {
+                    accessLabel.textContent = 'Aún procesando...';
+                    return;
+                }
+
+                // Mostrar la foto capturada
+                capturedPhoto.src = 'https://grupo3.juan.cl' + data.uploaded_image_url;
+                capturedPhoto.style.display = 'block';
+
+                // Cambiar decisionBox según resultado real
+                if (data.status === 'success') {
+                    decisionBox.classList.add('success');
+                    decisionBox.classList.remove('error');
+                    accessLabel.textContent = 'Acceso autorizado';
+                } else if (data.status === 'error') {
+                    decisionBox.classList.add('error');
+                    decisionBox.classList.remove('success');
+                    accessLabel.textContent = 'Acceso denegado';
+                } else {
+                    decisionBox.classList.remove('success', 'error');
+                    accessLabel.textContent = 'Verificando...';
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error al obtener resultado:', error);
+            });
     }
 
     // Lógica para enviar el RUT
@@ -49,25 +68,22 @@ document.addEventListener('DOMContentLoaded', function () {
                         decisionBox.classList.remove('success', 'error');
                         accessLabel.textContent = 'RUT enviado. Verificando...';
 
-                        // Empieza el polling de imagen SOLO después de enviar
-                        startPolling();
+                        // Después de guardar, consultar resultado UNA VEZ
+                        checkResult(rutValue);
 
-                        // ✅ Desbloquear input después de 10 seg para permitir nuevo intento
+                        // Desbloquear input después de 10 seg para nuevo intento
                         setTimeout(() => {
                             rutInput.disabled = false;
-                            rutInput.value = ''; // Limpiar el campo para reusar
+                            rutInput.value = '';
                             accessLabel.textContent = 'Acércate a la cámara';
                             decisionBox.classList.remove('success', 'error');
-                            clearInterval(pollingIntervalId); // Detener polling anterior
-                            pollingIntervalId = null; // Reset flag
-                            capturedPhoto.style.display = 'none'; // ocultar imagen anterior
+                            capturedPhoto.style.display = 'none';
                         }, 10000);
-
                     })
                     .catch(error => {
                         console.error('❌ Error al enviar RUT:', error);
                         decisionBox.classList.add('error');
-                        confirmationMessage.textContent = 'Error al enviar tu RUT. Inténtalo de nuevo.';
+                        accessLabel.textContent = 'Error al enviar tu RUT. Intenta de nuevo.';
                     });
             }
         });

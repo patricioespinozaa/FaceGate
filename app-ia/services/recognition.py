@@ -1,7 +1,7 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from services.database import get_user_by_rut
+from services.database import get_user_by_rut, log_attempt
 from models.embeddings import get_embedding
 from models.distances import cosine_distance, euclidean_distance
 from utils.file_ops import save_uploaded_image, copy_db_image_to_frontend, update_recientes, delete_uploaded_imagen
@@ -33,31 +33,16 @@ def process_request(uploaded_image, rut: str):
     
     user = get_user_by_rut(rut)
     if not user:
-        capture_dir = os.path.join(current_app.root_path, 'data', 'captured')
-        last_capture_path = os.path.join(capture_dir, 'last_capture.jpg')
-        if os.path.exists(last_capture_path):
-            os.remove(last_capture_path)
+        attempt_id = log_attempt(rut, 'error', notes="RUT no encontrado")
         return jsonify({
             "status": "error",
-            "message": "Rut no encontrado",
-            "data": {
-                "rut": None,
-                "nombre": None,
-                "distancia_coseno": None,
-                "distancia_euclidiana": None
-            }
+            "attempt_id": attempt_id,
+            "message": "RUT no encontrado"
         })
 
     name, image_path, folder_path = user['nombre'], user['path_foto'], user['path_carpeta_recientes']
 
     path_uploaded, filename_uploaded = save_uploaded_image(uploaded_image, rut)
-
-    capture_dir = os.path.join(current_app.root_path, 'data', 'captured')
-    os.makedirs(capture_dir, exist_ok=True)
-    last_capture_path = os.path.join(capture_dir, 'last_capture.jpg')
-
-    with open(path_uploaded, 'rb') as src, open(last_capture_path, 'wb') as dst:
-        dst.write(src.read())
 
     nombre_foto = copy_db_image_to_frontend(image_path)
 
@@ -66,23 +51,25 @@ def process_request(uploaded_image, rut: str):
     embedding_uploaded = get_embedding(uploaded_bytes)
 
     if embedding_uploaded is None:
-            return jsonify({
-                "status": "error",
-                "message": "Rostro no detectado, acerquese a la cámara",
-                "data": {
-                    "rut": None,
-                    "nombre": None,
-                    "distancia_coseno": None,
-                    "distancia_euclidiana": None
-                },
-                "images": {
-                    "uploaded_url": f"/static/uploads/{filename_uploaded}",
-                    "db_url": f"../app-front/static/img/{nombre_foto}"
-                }
-            })      
+        attempt_id = log_attempt(
+            rut, 'error',
+            uploaded_image_path=f"uploads/{filename_uploaded}",
+            db_image_path=nombre_foto,
+            notes="Rostro no detectado"
+        )
+        delete_uploaded_imagen(path_uploaded)
+        return jsonify({
+            "status": "error",
+            "attempt_id": attempt_id,
+            "message": "Rostro no detectado, acérquese a la cámara"
+        })
+
     with open(image_path, 'rb') as f:
         db_bytes = f.read()
     embedding_db = get_embedding(db_bytes)
+
+    euclidean_dist = euclidean_distance(embedding_uploaded, embedding_db)
+    cosine_dist = cosine_distance(embedding_uploaded, embedding_db)
 
     # procesamos la carpeta de recientes 
     embeddings_recientes=[]
@@ -93,8 +80,6 @@ def process_request(uploaded_image, rut: str):
         emb = get_embedding(imagen_bytes)
         if emb is not None: 
             embeddings_recientes.append(emb)    
-
-    cosine_dist = cosine_distance(embedding_uploaded, embedding_db)
 
     #calculamos las distancias para la carpeta recientes 
     recientes_cos_dist =  [
@@ -107,18 +92,29 @@ def process_request(uploaded_image, rut: str):
     peso_db = 0.7
     peso_recientes = 0.3
     dist_pond = peso_db * cosine_dist + peso_recientes * prom_cos_recientes
-    
-    euclidean_dist = euclidean_distance(embedding_uploaded, embedding_db)
 
     # cambiar distancia coseno -> base métricas
-    if cosine_dist <= 0.5: 
+    if cosine_dist <= 0.5:
+        status = 'success'
         update_recientes(path_uploaded,rut)
+    else:
+        status = 'error'
+
+    attempt_id = log_attempt(
+        rut, status,
+        cosine_distance=cosine_dist,
+        euclidean_distance=euclidean_dist,
+        uploaded_image_path=f"uploads/{filename_uploaded}",
+        db_image_path=nombre_foto,
+        notes=f"Ponderada: {dist_pond:.4f}"
+    )
 
     # en todos los casos borramos
     delete_uploaded_imagen(path_uploaded) 
 
     return jsonify({
         "status": "success" if dist_pond <= 0.5 else "error",
+        "attempt_id": attempt_id,
         "message": "Acceso permitido" if dist_pond <= 0.5 else "Acceso denegado",
         "data": {
             "rut": rut,
