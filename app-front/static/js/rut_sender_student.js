@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Logica para recibir la imagen tomada
     let pollingIntervalId = null;
-    capturedPhoto.style.display = 'none';
     function startPolling() {
         // Solo si no hay uno activo
         if (pollingIntervalId !== null) return;
