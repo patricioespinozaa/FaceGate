@@ -32,11 +32,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.status === 'success') {
                     decisionBox.classList.add('success');
                     decisionBox.classList.remove('error');
-                    accessLabel.textContent = 'Acceso autorizado';
+                    accessLabel.textContent = 'ACCESO PERMITIDO';
                 } else if (data.status === 'error') {
                     decisionBox.classList.add('error');
                     decisionBox.classList.remove('success');
-                    accessLabel.textContent = 'Acceso denegado';
+                    accessLabel.textContent = 'ACCESO DENEGADO';
                 } else {
                     decisionBox.classList.remove('success', 'error');
                     accessLabel.textContent = 'Verificando...';
