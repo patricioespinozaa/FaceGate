@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     fotoEnviada = true;
 
                     if (data.status === 'success') {
-                        updateDecision(true, data.data?.nombre ?? "", data.images.db_url, data.message);
+                        updateDecision(true, data.data?.nombre ?? "", data.data?.rut ?? "", data.message);
                     } else {
                         updateDecision(false, "", "", data.message);
                     }
@@ -56,6 +56,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     setTimeout(() => {
                         rutInput.value = "";
                         fotoEnviada = false;
+                        
+                        // Limpiar contenedor de la foto de la DB
+                        const ucampusContainer = document.getElementById('camera-body-ucampus');
+                        if (ucampusContainer) {
+                            ucampusContainer.innerHTML = '';
+                        }
+
+                        // Restaurar mensaje default
+                        const accessLabel = document.getElementById('access-label');
+                        const decisionBox = document.getElementById('decision-box');
+                        const decisionMessage = document.getElementById('decision-message');
+
+                        if (accessLabel) accessLabel.textContent = "Acércate a la cámara";
+                        if (decisionBox) decisionBox.classList.remove('success', 'error');
+                        if (decisionMessage) {
+                            decisionMessage.textContent = "";
+                            decisionMessage.classList.remove('success', 'error');
+                        }
                     }, 5000);
                 })
                 .catch(error => {

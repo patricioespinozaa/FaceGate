@@ -42,9 +42,8 @@ def process_request(uploaded_image, rut: str):
 
     name, image_path, folder_path = user['nombre'], user['path_foto'], user['path_carpeta_recientes']
 
-    path_uploaded, filename_uploaded = save_uploaded_image(uploaded_image, rut)
-    path_uploaded_front, filename_uploaded_front = save_uploaded_image_to_frontend(uploaded_image, rut)
-
+    path_uploaded, filename_uploaded = save_uploaded_image_to_frontend(uploaded_image, rut)
+    
     nombre_foto = copy_db_image_to_frontend(image_path)
 
     with open(path_uploaded, 'rb') as f:
@@ -54,7 +53,7 @@ def process_request(uploaded_image, rut: str):
     if embedding_uploaded is None:
         attempt_id = log_attempt(
             rut, 'error',
-            uploaded_image_path=f"uploads/{filename_uploaded_front}.jpg",
+            uploaded_image_path=f"uploads/{filename_uploaded}",
             db_image_path=nombre_foto,
             notes="Rostro no detectado"
         )
@@ -105,13 +104,13 @@ def process_request(uploaded_image, rut: str):
         rut, status,
         cosine_distance=cosine_dist,
         euclidean_distance=euclidean_dist,
-        uploaded_image_path=f"uploads/{filename_uploaded_front}",
+        uploaded_image_path=f"uploads/{filename_uploaded}",
         db_image_path=nombre_foto,
         notes=f"Ponderada: {dist_pond:.4f}"
     )
 
     # en todos los casos borramos
-    delete_uploaded_imagen(path_uploaded) 
+    #delete_uploaded_imagen(path_uploaded) 
 
     return jsonify({
         "status": "success" if dist_pond <= 0.5 else "error",
@@ -126,7 +125,7 @@ def process_request(uploaded_image, rut: str):
             "distancia_euclidiana": euclidean_dist,
         },
         "images": {
-            "uploaded_url": f"/static/uploads/{filename_uploaded}",
-            "db_url": f"../app-front/static/img/{nombre_foto}"
+            "uploaded_url": f"/facegate/app-front/static/uploads/{filename_uploaded}",
+            "db_url": f"/facegate/app-front/static/img/{nombre_foto}"
         }
     })

@@ -52,8 +52,8 @@ def get_result_by_rut(rut: str) -> Optional[Dict[str, Any]]:
     if result:
         return {
             "status": result['status'],
-            "uploaded_image_url": f"/static/{result['uploaded_image_path']}",
-            "db_image_url": f"/static/img/{result['db_image_path']}",
+            "uploaded_image_url": f"/facegate/app-front/static/{result['uploaded_image_path']}",
+            "db_image_url": f"/facegate/app-front/static/img/{result['db_image_path']}",
             "timestamp": str(result['timestamp'])
         }
     else:
