@@ -22,25 +22,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Si ya envió foto para este RUT, no la vuelva a enviar:
             if (fotoEnviada) return;
+            fotoEnviada = true;
 
             // Verificar cámara lista:
             if (!video || video.readyState < 2) {
                 console.warn("⚠️ Cámara no lista todavía.");
+                fotoEnviada = false;
                 return;
             }
 
             // Capturar foto:
             const blob = await capturarFoto(video);
-            if (!blob) return;
-
-            // Despliega la foto capturada
-            const capturedPhoto = document.getElementById('captured-photo');
-            if (capturedPhoto) {
-                capturedPhoto.src = URL.createObjectURL(blob);
-
-                // Mostrar foto, ocultar stream
-                video.style.display = 'none';
-                capturedPhoto.style.display = 'block';
+            if (!blob) {
+                fotoEnviada = false;
+                return;
             }
 
             // Enviar a /predict:
@@ -55,12 +50,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(res => res.json())
                 .then(data => {
                     console.log('✅ Respuesta /predict:', data);
-                    fotoEnviada = true;
+
+                    const capturedPhoto = document.getElementById('captured-photo');
+                    if (capturedPhoto) {
+                        capturedPhoto.src = 'https://grupo3.juan.cl' + data.images.uploaded_url;
+                        capturedPhoto.style.display = 'block';
+                        video.style.display = 'none';
+                    }
 
                     if (data.status === 'success') {
                         updateDecision(true, data.data?.nombre ?? "", data.data?.rut ?? "", data.message);
                     } else {
-                         updateDecision(false, data.data?.nombre ?? "", data.data?.rut ?? "", data.message);
+                        updateDecision(false, data.data?.nombre ?? "", data.data?.rut ?? "", data.message);
                     }
 
                     // Limpia input del Guardia después de unos segundos
@@ -94,10 +95,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch(error => {
                     console.error('❌ Error en /predict:', error);
+                    fotoEnviada = false;
                 });
 
         } catch (error) {
             console.error('❌ Error en polling Guardia:', error);
+            fotoEnviada = false;
         }
     }
 
