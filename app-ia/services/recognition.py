@@ -38,11 +38,11 @@ def process_request(uploaded_image, rut: str):
         attempt_id = log_attempt(rut,
                                  'error',
                                  uploaded_image_path=f"uploads/{filename_uploaded}",
-                                 notes="RUT no encontrado")
+                                 notes="Rut no encontrado")
         return jsonify({
             "status": "error",
             "attempt_id": attempt_id,
-            "message": "RUT no encontrado",
+            "message": "Rut no encontrado",
             "images": {
                 "uploaded_url": f"/facegate/app-front/static/uploads/{filename_uploaded}",
                 "db_url": "/facegate/app-front/static/img/plain.png"
@@ -65,11 +65,15 @@ def process_request(uploaded_image, rut: str):
             db_image_path=nombre_foto,
             notes="Rostro no detectado"
         )
-        delete_uploaded_imagen(path_uploaded)
+        #delete_uploaded_imagen(path_uploaded)
         return jsonify({
             "status": "error",
             "attempt_id": attempt_id,
-            "message": "Rostro no detectado, acérquese a la cámara",
+            "message": "Acceso denegado",
+            "data": {
+                "rut": rut,
+                "nombre": name
+                },
             "images": {
                 "uploaded_url": f"/facegate/app-front/static/uploads/{filename_uploaded}",
                 "db_url": f"/facegate/app-front/static/img/{nombre_foto}"

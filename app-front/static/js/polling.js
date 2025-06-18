@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (data.status === 'success') {
                         updateDecision(true, data.data?.nombre ?? "", data.data?.rut ?? "", data.message);
                     } else {
-                        updateDecision(false, "", "", data.message);
+                         updateDecision(false, data.data?.nombre ?? "", data.data?.rut ?? "", data.message);
                     }
 
                     // Limpia input del Guardia después de unos segundos

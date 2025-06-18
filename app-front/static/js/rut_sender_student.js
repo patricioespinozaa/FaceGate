@@ -65,6 +65,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then(data => {
                         console.log('✅ RUT guardado:', data);
                         rutInput.disabled = true;
+                        
+                        // Quitamos ultima foto
+                        capturedPhoto.style.display = 'none';
+                        capturedPhoto.src = '';
 
                         // Cambia el decision box a estado "En proceso"
                         decisionBox.classList.remove('success', 'error');
