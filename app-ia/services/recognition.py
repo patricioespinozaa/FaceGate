@@ -32,18 +32,26 @@ def process_request(uploaded_image, rut: str):
     """
     
     user = get_user_by_rut(rut)
+    path_uploaded, filename_uploaded = save_uploaded_image_to_frontend(uploaded_image, rut)
+
     if not user:
-        attempt_id = log_attempt(rut, 'error', notes="RUT no encontrado")
+        attempt_id = log_attempt(rut,
+                                 'error',
+                                 uploaded_image_path=f"uploads/{filename_uploaded}",
+                                 notes="RUT no encontrado")
         return jsonify({
             "status": "error",
             "attempt_id": attempt_id,
-            "message": "RUT no encontrado"
+            "message": "RUT no encontrado",
+            "images": {
+                "uploaded_url": f"/facegate/app-front/static/uploads/{filename_uploaded}",
+                "db_url": "/facegate/app-front/static/img/plain.png"
+            }
+
         })
 
     name, image_path, folder_path = user['nombre'], user['path_foto'], user['path_carpeta_recientes']
 
-    path_uploaded, filename_uploaded = save_uploaded_image_to_frontend(uploaded_image, rut)
-    
     nombre_foto = copy_db_image_to_frontend(image_path)
 
     with open(path_uploaded, 'rb') as f:
@@ -61,7 +69,11 @@ def process_request(uploaded_image, rut: str):
         return jsonify({
             "status": "error",
             "attempt_id": attempt_id,
-            "message": "Rostro no detectado, acérquese a la cámara"
+            "message": "Rostro no detectado, acérquese a la cámara",
+            "images": {
+                "uploaded_url": f"/facegate/app-front/static/uploads/{filename_uploaded}",
+                "db_url": f"/facegate/app-front/static/img/{nombre_foto}"
+            }
         })
 
     with open(image_path, 'rb') as f:

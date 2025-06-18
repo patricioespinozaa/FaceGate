@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 // Mostrar la foto capturada
+                console.log('data.uploaded_image_url', ' + ',  data.images.uploaded_url)
                 capturedPhoto.src = 'https://grupo3.juan.cl' + data.uploaded_image_url;
                 capturedPhoto.style.display = 'block';
 
