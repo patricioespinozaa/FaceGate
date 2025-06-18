@@ -32,6 +32,16 @@ document.addEventListener('DOMContentLoaded', function () {
             const blob = await capturarFoto(video);
             if (!blob) return;
 
+            // Despliega la foto capturada
+            const capturedPhoto = document.getElementById('captured-photo');
+            if (capturedPhoto) {
+                capturedPhoto.src = URL.createObjectURL(blob);
+
+                // Mostrar foto, ocultar stream
+                video.style.display = 'none';
+                capturedPhoto.style.display = 'block';
+            }
+
             // Enviar a /predict:
             const formData = new FormData();
             formData.append('rut', rut);
@@ -61,6 +71,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         const ucampusContainer = document.getElementById('camera-body-ucampus');
                         if (ucampusContainer) {
                             ucampusContainer.innerHTML = '';
+                        }
+                        if (capturedPhoto) {
+                            capturedPhoto.src = "";
+                            capturedPhoto.style.display = 'none';
+                            video.style.display = 'block';
                         }
 
                         // Restaurar mensaje default
