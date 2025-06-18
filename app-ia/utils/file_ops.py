@@ -71,3 +71,20 @@ def update_recientes(path_reciente, rut: str):
         archivos.sort(key=lambda x: os.path.getmtime(os.path.join(carpeta_recientes, x)))
         os.remove(os.path.join(carpeta_recientes, archivos[0]))
         shutil.copy(path_reciente, carpeta_recientes)
+
+def save_uploaded_image_to_frontend(uploaded_image, rut: str) -> tuple[str, str]:
+    """
+    Guarda una imagen capturada directamente en la carpeta pública /static/uploads/.
+
+    Args:
+        uploaded_image: Objeto de imagen recibido.
+        rut (str): RUT del usuario para generar nombre único.
+
+    Returns:
+        tuple[str, str]: Ruta absoluta y nombre de archivo.
+    """
+    filename = f"uploaded_{rut}_{datetime.now().timestamp()}.jpeg"
+    path = os.path.join('..', 'app-front', 'static', 'uploads', filename)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    uploaded_image.save(path)
+    return path, filename

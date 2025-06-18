@@ -46,14 +46,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log('✅ Respuesta /predict:', data);
                     fotoEnviada = true;
 
-                    updateDecision(
-                        data.status === 'success',
-                        data.data?.nombre ?? '',
-                        data.images.db_url,   // pasa URL completa
-                        data.message
-                    );
-
-                    fotoEnviada = true;
+                    if (data.status === 'success') {
+                        updateDecision(true, data.data?.nombre ?? "", data.images.db_url, data.message);
+                    } else {
+                        updateDecision(false, "", "", data.message);
+                    }
 
                     // Limpia input del Guardia después de unos segundos
                     setTimeout(() => {

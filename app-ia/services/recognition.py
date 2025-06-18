@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from services.database import get_user_by_rut, log_attempt
 from models.embeddings import get_embedding
 from models.distances import cosine_distance, euclidean_distance
-from utils.file_ops import save_uploaded_image, copy_db_image_to_frontend, update_recientes, delete_uploaded_imagen
+from utils.file_ops import save_uploaded_image, copy_db_image_to_frontend, update_recientes, delete_uploaded_imagen, save_uploaded_image_to_frontend
 from flask import jsonify, current_app
 import glob
 
@@ -43,6 +43,7 @@ def process_request(uploaded_image, rut: str):
     name, image_path, folder_path = user['nombre'], user['path_foto'], user['path_carpeta_recientes']
 
     path_uploaded, filename_uploaded = save_uploaded_image(uploaded_image, rut)
+    path_uploaded_front, filename_uploaded_front = save_uploaded_image_to_frontend(uploaded_image, rut)
 
     nombre_foto = copy_db_image_to_frontend(image_path)
 
@@ -53,7 +54,7 @@ def process_request(uploaded_image, rut: str):
     if embedding_uploaded is None:
         attempt_id = log_attempt(
             rut, 'error',
-            uploaded_image_path=f"uploads/{filename_uploaded}",
+            uploaded_image_path=f"uploads/{filename_uploaded_front}.jpg",
             db_image_path=nombre_foto,
             notes="Rostro no detectado"
         )
@@ -104,7 +105,7 @@ def process_request(uploaded_image, rut: str):
         rut, status,
         cosine_distance=cosine_dist,
         euclidean_distance=euclidean_dist,
-        uploaded_image_path=f"uploads/{filename_uploaded}",
+        uploaded_image_path=f"uploads/{filename_uploaded_front}",
         db_image_path=nombre_foto,
         notes=f"Ponderada: {dist_pond:.4f}"
     )
