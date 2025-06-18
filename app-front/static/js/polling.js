@@ -2,70 +2,43 @@ document.addEventListener('DOMContentLoaded', function () {
     const video = document.getElementById('video-stream');
     const rutInput = document.getElementById('rut');
     const pollingInterval = 3000; // cada 3 segundos
+    const timeout = 20000;
     let fotoEnviada = false;
+
     async function poll() {
         try {
-            // Obtener el último RUT desde el backend
-            const response = await fetch('https://grupo3.juan.cl/facegate/app-ia/get_result');
+            // Pedir el último RUT pendiente:
+            const response = await fetch('https://grupo3.juan.cl/facegate/app-ia/get_last_rut');
             const result = await response.json();
             const rut = result.rut;
 
             if (!rut) {
                 console.log("⏳ No hay RUT pendiente. Polling continúa...");
-                fotoEnviada = false; // Reset flag si no hay RUT
+                fotoEnviada = false;
                 return;
             }
 
-            // Mostrar RUT en el input del guardia
             rutInput.value = rut;
 
-            // Si ya enviaste foto en este intento, espera solo resultado
-            if (fotoEnviada) {
-                console.log("⏳ Foto ya enviada, esperando resultado...");
+            // Si ya envió foto para este RUT, no la vuelva a enviar:
+            if (fotoEnviada) return;
+            fotoEnviada = true;
 
-                // Si detecta fin del ciclo, resetea flag para permitir nuevo intento
-                if (result.predict_result !== 'pending') {
-
-                    setTimeout(() => {
-                        rutInput.value = ""; // Limpia input visible del guardia
-
-                        const decisionBox = document.getElementById('decision-box');
-                        const accessLabel = document.getElementById('access-label');
-                        const decisionMessage = document.getElementById('decision-message');
-
-                        decisionBox.classList.remove('success', 'error');
-                        accessLabel.textContent = "Acércate a la cámara";
-                        decisionMessage.textContent = "";
-                        decisionMessage.classList.remove('success', 'error');
-
-                        const cameraBodyUcampus = document.getElementById('camera-body-ucampus');
-                        cameraBodyUcampus.innerHTML = '<div class="spinner" id="camera-spinner"></div>';
-
-                    }, 5000);
-
-                    fotoEnviada = false;
-                    console.log("⏳ No hay RUT pendiente. Polling continúa...");
-                }
-                return;
-            }
-
-            // Si no es pending, reset flag
-            if (result.predict_result !== 'pending') {
-                fotoEnviada = false;
-                console.log("⏳ No hay RUT pendiente. Polling continúa...");
-                return;
-            }
-
-            // Verificar que la cámara esté lista
+            // Verificar cámara lista:
             if (!video || video.readyState < 2) {
                 console.warn("⚠️ Cámara no lista todavía.");
+                fotoEnviada = false;
                 return;
             }
 
-            // Capturar foto
+            // Capturar foto:
             const blob = await capturarFoto(video);
-            if (!blob) return;
+            if (!blob) {
+                fotoEnviada = false;
+                return;
+            }
 
+            // Enviar a /predict:
             const formData = new FormData();
             formData.append('rut', rut);
             formData.append('imagen', blob, 'captura.jpeg');
@@ -76,24 +49,58 @@ document.addEventListener('DOMContentLoaded', function () {
             })
                 .then(res => res.json())
                 .then(data => {
-                    console.log('✅ Respuesta backend:', data);
+                    console.log('✅ Respuesta /predict:', data);
+
+                    const capturedPhoto = document.getElementById('captured-photo');
+                    if (capturedPhoto) {
+                        capturedPhoto.src = 'https://grupo3.juan.cl' + data.images.uploaded_url;
+                        capturedPhoto.style.display = 'block';
+                        video.style.display = 'none';
+                    }
 
                     if (data.status === 'success') {
                         updateDecision(true, data.data?.nombre ?? "", data.data?.rut ?? "", data.message);
                     } else {
-                        updateDecision(false, "", "", data.message);
+                        updateDecision(false, data.data?.nombre ?? "", data.data?.rut ?? "", data.message);
                     }
 
-                    // Marca como enviada
-                    fotoEnviada = true;
+                    // Limpia input del Guardia después de unos segundos
+                    setTimeout(() => {
+                        rutInput.value = "";
+                        fotoEnviada = false;
+                        
+                        // Limpiar contenedor de la foto de la DB
+                        const ucampusContainer = document.getElementById('camera-body-ucampus');
+                        if (ucampusContainer) {
+                            ucampusContainer.innerHTML = '';
+                        }
+                        if (capturedPhoto) {
+                            capturedPhoto.src = "";
+                            capturedPhoto.style.display = 'none';
+                            video.style.display = 'block';
+                        }
 
+                        // Restaurar mensaje default
+                        const accessLabel = document.getElementById('access-label');
+                        const decisionBox = document.getElementById('decision-box');
+                        const decisionMessage = document.getElementById('decision-message');
+
+                        if (accessLabel) accessLabel.textContent = "Acércate a la cámara";
+                        if (decisionBox) decisionBox.classList.remove('success', 'error');
+                        if (decisionMessage) {
+                            decisionMessage.textContent = "";
+                            decisionMessage.classList.remove('success', 'error');
+                        }
+                    }, timeout);
                 })
                 .catch(error => {
-                    console.error('❌ Error en predict:', error);
+                    console.error('❌ Error en /predict:', error);
+                    fotoEnviada = false;
                 });
 
         } catch (error) {
-            console.error('❌ Error en polling:', error);
+            console.error('❌ Error en polling Guardia:', error);
+            fotoEnviada = false;
         }
     }
 

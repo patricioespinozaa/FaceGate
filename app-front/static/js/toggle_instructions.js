@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const button = document.getElementById('toggle-button');
     const box = document.getElementById('instructions-box');
 
-    button.addEventListener('click', () => {
+    window.toggleInstructions = function () {
         const willCollapse = container.classList.contains('expanded');
 
         if (willCollapse) {
@@ -26,5 +26,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // flechita
         button.textContent = willCollapse ? '▼' : '▲';
-    });
+    };
 });
