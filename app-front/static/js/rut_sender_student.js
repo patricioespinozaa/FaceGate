@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const decisionBox = document.getElementById('decision-box');
     const accessLabel = document.getElementById('access-label');
     const capturedPhoto = document.getElementById('captured-photo');
+    const timeout = 20000;
+    const delay = 5000;
 
     // Ocultar foto al inicio
     capturedPhoto.style.display = 'none';
@@ -10,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Lógica: después de enviar RUT, espera y consulta /get_result
     async function checkResult(rut) {
         // Esperar 5 s para dar tiempo a capturar foto y verificar
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise(resolve => setTimeout(resolve, delay));
 
         fetch(`https://grupo3.juan.cl/facegate/app-ia/get_result?rut=${rut}`)
             .then(res => res.json())
@@ -78,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             accessLabel.textContent = 'Acércate a la cámara';
                             decisionBox.classList.remove('success', 'error');
                             capturedPhoto.style.display = 'none';
-                        }, 10000);
+                        }, timeout);
                     })
                     .catch(error => {
                         console.error('❌ Error al enviar RUT:', error);

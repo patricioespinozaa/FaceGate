@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const video = document.getElementById('video-stream');
     const rutInput = document.getElementById('rut');
     const pollingInterval = 3000; // cada 3 segundos
+    const timeout = 20000;
     let fotoEnviada = false;
 
     async function poll() {
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             decisionMessage.textContent = "";
                             decisionMessage.classList.remove('success', 'error');
                         }
-                    }, 5000);
+                    }, timeout);
                 })
                 .catch(error => {
                     console.error('❌ Error en /predict:', error);
