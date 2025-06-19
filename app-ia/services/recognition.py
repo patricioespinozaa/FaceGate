@@ -113,18 +113,25 @@ def process_request(uploaded_image, rut: str):
     if cosine_dist <= 0.5:
         status = 'success'
         update_recientes(path_uploaded,rut)
+        attempt_id = log_attempt(
+            rut, status,
+            cosine_distance=cosine_dist,
+            euclidean_distance=euclidean_dist,
+            uploaded_image_path=f"uploads/{filename_uploaded}",
+            db_image_path=nombre_foto,
+            notes=f"Ponderada: {dist_pond:.4f}"
+        )
     else:
         status = 'error'
-
-    attempt_id = log_attempt(
+        attempt_id = log_attempt(
         rut, status,
         cosine_distance=cosine_dist,
         euclidean_distance=euclidean_dist,
         uploaded_image_path=f"uploads/{filename_uploaded}",
         db_image_path=nombre_foto,
-        notes=f"Ponderada: {dist_pond:.4f}"
+        notes="Verificación fallida"
     )
-
+        
     # en todos los casos borramos
     #delete_uploaded_imagen(path_uploaded) 
 

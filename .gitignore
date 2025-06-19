@@ -8,6 +8,7 @@
 /app-ia/data/
 /app-ia/test/src/
 /app-front/static/img/
+/app-front/static/uploads/
 # Server
 /apache-app-ia/
 server_app-front.sh
