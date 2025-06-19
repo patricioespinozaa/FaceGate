@@ -1,6 +1,7 @@
 from config.settings import DB_CREDENTIALS
 import mysql.connector
 from typing import Optional, Dict, Any
+import datetime
 
 def get_user_by_rut(rut: str) -> Optional[Dict[str, Any]]:
     """
@@ -32,6 +33,7 @@ def get_result_by_rut(rut: str) -> Optional[Dict[str, Any]]:
                                   y la fecha/hora del intento si existe.
                                   Si no hay registro, retorna un estado 'pending'.
     """
+    
     conn = mysql.connector.connect(**DB_CREDENTIALS)
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
@@ -39,9 +41,10 @@ def get_result_by_rut(rut: str) -> Optional[Dict[str, Any]]:
             status,
             uploaded_image_path,
             db_image_path,
-            timestamp
+            timestamp,
+            notes
         FROM audit_log
-        WHERE rut = %s
+        WHERE rut = %s AND timestamp >= NOW() - INTERVAL 5 SECOND
         ORDER BY timestamp DESC
         LIMIT 1
     """, (rut,))
@@ -54,7 +57,8 @@ def get_result_by_rut(rut: str) -> Optional[Dict[str, Any]]:
             "status": result['status'],
             "uploaded_image_url": f"/facegate/app-front/static/{result['uploaded_image_path']}",
             "db_image_url": f"/facegate/app-front/static/img/{result['db_image_path']}",
-            "timestamp": str(result['timestamp'])
+            "timestamp": str(result['timestamp']),
+            "notes": str(result['notes'])
         }
     else:
         return {"status": "pending"}

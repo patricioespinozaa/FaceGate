@@ -8,6 +8,8 @@ from utils.file_ops import save_uploaded_image, copy_db_image_to_frontend, updat
 from flask import jsonify, current_app
 import glob
 
+THRESHOLD = 0.45
+print(f"Threshold for cosine distance set to: {THRESHOLD}", file=sys.stderr)
 
 def process_request(uploaded_image, rut: str):
     """
@@ -110,28 +112,35 @@ def process_request(uploaded_image, rut: str):
     dist_pond = peso_db * cosine_dist + peso_recientes * prom_cos_recientes
 
     # cambiar distancia coseno -> base métricas
-    if cosine_dist <= 0.5:
+    if dist_pond <= THRESHOLD:
         status = 'success'
         update_recientes(path_uploaded,rut)
+        attempt_id = log_attempt(
+            rut, status,
+            cosine_distance=cosine_dist,
+            euclidean_distance=euclidean_dist,
+            uploaded_image_path=f"uploads/{filename_uploaded}",
+            db_image_path=nombre_foto,
+            notes=f"Ponderada: {dist_pond:.4f}"
+        )
     else:
         status = 'error'
-
-    attempt_id = log_attempt(
+        attempt_id = log_attempt(
         rut, status,
         cosine_distance=cosine_dist,
         euclidean_distance=euclidean_dist,
         uploaded_image_path=f"uploads/{filename_uploaded}",
         db_image_path=nombre_foto,
-        notes=f"Ponderada: {dist_pond:.4f}"
+        notes="Verificación fallida"
     )
-
+        
     # en todos los casos borramos
     #delete_uploaded_imagen(path_uploaded) 
 
     return jsonify({
-        "status": "success" if dist_pond <= 0.5 else "error",
+        "status": "success" if dist_pond <= THRESHOLD else "error",
         "attempt_id": attempt_id,
-        "message": "Acceso permitido" if dist_pond <= 0.5 else "Acceso denegado",
+        "message": "Acceso permitido" if dist_pond <= THRESHOLD else "Acceso denegado",
         "data": {
             "rut": rut,
             "nombre": name,

@@ -2,15 +2,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const rutInput = document.getElementById('rut');
     const decisionBox = document.getElementById('decision-box');
     const accessLabel = document.getElementById('access-label');
+    const decisionMessage = document.getElementById('decision-message');
     const capturedPhoto = document.getElementById('captured-photo');
+    const cameraContainer = document.getElementById('camera-body-student');
     const timeout = 20000;
     const delay = 5000;
 
-    // Ocultar foto al inicio
-    capturedPhoto.style.display = 'none';
+    decisionBox.classList.remove('success', 'error');
+    decisionMessage.classList.remove('success', 'error'); 
 
     // Lógica: después de enviar RUT, espera y consulta /get_result
-    async function checkResult(rut) {
+    async function checkResult(rut) { 
+        
+        decisionBox.classList.remove('success', 'error');
+        decisionMessage.classList.remove('success', 'error'); 
+
+        if (cameraContainer) {
+            cameraContainer.innerHTML = '<div class="spinner" id="camera-spinner"></div>';
+        }
         // Esperar 5 s para dar tiempo a capturar foto y verificar
         await new Promise(resolve => setTimeout(resolve, delay));
 
@@ -25,20 +34,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 // Mostrar la foto capturada
-                capturedPhoto.src = 'https://grupo3.juan.cl' + data.uploaded_image_url;
-                capturedPhoto.style.display = 'block';
+                if (cameraContainer) {
+                    cameraContainer.innerHTML = ''; // Quita el spinner
 
+                    const img = document.createElement('img');
+                    img.src = 'https://grupo3.juan.cl' + data.uploaded_image_url;
+                    img.alt = 'Tu foto capturada';
+
+                    cameraContainer.appendChild(img);
+                }
                 // Cambiar decisionBox según resultado real
                 if (data.status === 'success') {
                     decisionBox.classList.add('success');
                     decisionBox.classList.remove('error');
+                    decisionMessage.classList.remove('success', 'error'); 
                     accessLabel.textContent = 'ACCESO PERMITIDO';
                 } else if (data.status === 'error') {
                     decisionBox.classList.add('error');
                     decisionBox.classList.remove('success');
+                    decisionMessage.classList.remove('success', 'error'); 
                     accessLabel.textContent = 'ACCESO DENEGADO';
+                    if (data.notes === 'Rut no encontrado') {
+                        decisionMessage.textContent = "Rut no encontrado";
+                        decisionMessage.classList.add('error');
+                    }
+                    else if (data.notes === 'Verificación fallida') {
+                        decisionMessage.textContent = "Verificación fallida";
+                        decisionMessage.classList.add('error');
+                    }
+                    else if (data.notes === 'Rostro no detectado') {
+                        decisionMessage.textContent = "Rostro no detectado";
+                        decisionMessage.classList.add('error');
+                    }
                 } else {
                     decisionBox.classList.remove('success', 'error');
+                    decisionMessage.classList.remove('success', 'error'); 
                     accessLabel.textContent = 'Verificando...';
                 }
             })
@@ -67,11 +97,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         rutInput.disabled = true;
                         
                         // Quitamos ultima foto
-                        capturedPhoto.style.display = 'none';
-                        capturedPhoto.src = '';
+                        
+                        if (cameraContainer) {
+                            cameraContainer.innerHTML = '<div class="spinner" id="camera-spinner"></div>';
+                        }
 
                         // Cambia el decision box a estado "En proceso"
                         decisionBox.classList.remove('success', 'error');
+                        decisionMessage.classList.remove('success', 'error'); 
                         accessLabel.textContent = 'RUT enviado. Verificando...';
 
                         // Después de guardar, consultar resultado UNA VEZ
@@ -83,7 +116,11 @@ document.addEventListener('DOMContentLoaded', function () {
                             rutInput.value = '';
                             accessLabel.textContent = 'Acércate a la cámara';
                             decisionBox.classList.remove('success', 'error');
-                            capturedPhoto.style.display = 'none';
+                            decisionMessage.classList.remove('success', 'error');
+                            decisionMessage.textContent = '';
+                            if (cameraContainer) {
+                                cameraContainer.innerHTML = '<div class="spinner" id="camera-spinner"></div>';
+                            }
                         }, timeout);
                     })
                     .catch(error => {
