@@ -31,7 +31,7 @@ def evaluate_image(image_path: str, claimed_rut: str, real_rut: str) -> None:
         print(f"[Error] with image '{image_path}': API call failed or invalid JSON.")
         return
 
-    # print(f"Resultado = {result}") #NOTE: Al descomentarlo se guardará en el txt resultante (permite observar en que imagen falla)
+    print(f"Resultado = {result}") #NOTE: Al descomentarlo se guardará en el txt resultante (permite observar en que imagen falla)
     prediction_success = result.get("status") == "success" # Indica si la predicción fue exitosa o erronea
     update_metrics(claimed_rut, real_rut, prediction_success)
 
@@ -63,7 +63,7 @@ def main() -> None:
             with tqdm(suplantadores, desc=f"🕵️ Probando {image_name}", leave=False) as pbar:
                 for fake_rut in pbar:
                     pbar.set_postfix({'Suplantador': fake_rut})
-                    # print(f"Evaluated {image_name} with claimed RUT '{fake_rut}' against real RUT '{real_rut}'.") #NOTE: Al descomentarlo se guardará en el txt resultante (permite observar en que imagen falla)
+                    print(f"Evaluated {image_name} with claimed RUT '{fake_rut}' against real RUT '{real_rut}'.") #NOTE: Al descomentarlo se guardará en el txt resultante (permite observar en que imagen falla)
                     evaluate_image(image_path, claimed_rut=fake_rut, real_rut=real_rut)
 
     report_metrics()
