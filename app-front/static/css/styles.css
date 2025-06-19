@@ -136,6 +136,18 @@
   display: block;
 }
 
+#camera-body-student {
+    width: 100%;
+    height: 100%;
+}
+
+#camera-body-student img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
 #captured-photo {
     width: 100%;
     height: 100%;

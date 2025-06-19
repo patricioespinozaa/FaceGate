@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     const img = document.createElement('img');
                     img.src = 'https://grupo3.juan.cl' + data.uploaded_image_url;
                     img.alt = 'Tu foto capturada';
-                    img.style.maxWidth = '400px';
 
                     cameraContainer.appendChild(img);
                 }
