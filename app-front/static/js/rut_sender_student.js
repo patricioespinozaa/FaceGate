@@ -62,6 +62,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         decisionMessage.textContent = "Verificación fallida";
                         decisionMessage.classList.add('error');
                     }
+                    else if (data.notes === 'Rostro no detectado') {
+                        decisionMessage.textContent = "Rostro no detectado";
+                        decisionMessage.classList.add('error');
+                    }
                 } else {
                     decisionBox.classList.remove('success', 'error');
                     decisionMessage.classList.remove('success', 'error'); 
