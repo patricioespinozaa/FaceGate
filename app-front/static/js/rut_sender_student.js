@@ -81,7 +81,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (rutInput) {
         rutInput.addEventListener('keydown', async function (event) {
             if (event.key === 'Enter') {
-                const rutValue = rutInput.value.trim();
+                let rut = rutInput.value.replace(/[^0-9kK]/g, '');
+                const cuerpo = rut.slice(0, -1);
+                const dv = rut.slice(-1).toLowerCase();
+                const rutValue = `${cuerpo}-${dv}`;
                 if (!rutValue) return;
 
                 const formData = new FormData();
