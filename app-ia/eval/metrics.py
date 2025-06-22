@@ -76,17 +76,10 @@ def report_metrics() -> None:
     )
 
     # Métricas generales (macro)
-    macro_accuracy = correct / total_cases if total_cases else None
-
-    macro_precision = (
-        ((precision_legit or 0) + (precision_spoof or 0)) / 2
-    )
-    macro_recall = (
-        ((recall_legit or 0) + (recall_spoof or 0)) / 2
-    )
-    macro_f1 = (
-        ((f1_legit or 0) + (f1_spoof or 0)) / 2
-    )
+    macro_accuracy = correct / total_cases if total_cases else 0
+    macro_precision = TP / (TP + FP) if (TP + FP) else 0
+    macro_recall = TP / (TP + FN) if (TP + FN) else 0
+    macro_f1 = 2*TP / (2*TP + FP + FN) if (TP + FP + FN) else 0
 
     print("\n=== EVALUATION RESULTS ===")
 
@@ -110,9 +103,9 @@ def report_metrics() -> None:
     print(f"  Evaluaciones totales: {total_cases}")
     print(f"  Predicciones correctas: {correct}")
     print(f"  Exactitud (Accuracy):   {macro_accuracy:.2%}" if macro_accuracy is not None else "  Exactitud:        N/A")
-    print(f"  Recall (macro):         {macro_recall:.2%}")
-    print(f"  Precision (macro):      {macro_precision:.2%}")
-    print(f"  F1-score (macro):       {macro_f1:.2%}")
+    print(f"  Recall:                 {macro_recall:.2%}")
+    print(f"  Precision:              {macro_precision:.2%}")
+    print(f"  F1-score:               {macro_f1:.2%}")
 
     headers = ["Clase", "Total", "TP/TN", "FP/FN", "Accuracy", "Recall", "Precision", "F1-score"]
 
