@@ -8,7 +8,7 @@ from utils.file_ops import save_uploaded_image, copy_db_image_to_frontend, updat
 from flask import jsonify, current_app
 import glob
 
-THRESHOLD = 0.25
+THRESHOLD = 0.35
 #  systemctl --user restart server_app-ia
 print(f"Threshold for cosine distance set to: {THRESHOLD}", file=sys.stderr)
 

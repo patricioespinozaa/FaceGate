@@ -21,7 +21,6 @@ function updateDecision(isVerified, studentName = '', studentPhoto = '', dataMes
         decisionMessage.classList.add('success');
 
         img.src = "/facegate/app-front/static/img/".concat(studentPhoto).concat(".jpeg");
-        img.alt = "Foto del estudiante";
 
     } else if (!isVerified && dataMessage === "Acceso denegado") {
         decisionBox.classList.add('error');
@@ -31,7 +30,6 @@ function updateDecision(isVerified, studentName = '', studentPhoto = '', dataMes
         decisionMessage.classList.add('error');
 
         img.src =  "/facegate/app-front/static/img/".concat(studentPhoto).concat(".jpeg");
-        img.alt = "Foto del estudiante";
 
     } else if (!isVerified && dataMessage === "Rut no encontrado") {
         decisionBox.classList.add('error');
@@ -41,7 +39,6 @@ function updateDecision(isVerified, studentName = '', studentPhoto = '', dataMes
         decisionMessage.classList.add('error');
 
         img.src = "/facegate/app-front/static/img/plain.png";
-        img.alt = "Imagen de error";
 
     } else {
         decisionBox.classList.add('error');
@@ -51,7 +48,6 @@ function updateDecision(isVerified, studentName = '', studentPhoto = '', dataMes
         decisionMessage.classList.add('error');
 
         img.src = "/facegate/app-front/static/img/plain.png";
-        img.alt = "Imagen de error";
     }
     //  si esta ucampus container...
     if (ucampusContainer) {
