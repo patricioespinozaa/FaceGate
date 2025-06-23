@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     const img = document.createElement('img');
                     img.src = 'https://grupo3.juan.cl' + data.uploaded_image_url;
-                    img.alt = 'Tu foto capturada';
 
                     cameraContainer.appendChild(img);
                 }
@@ -114,17 +113,17 @@ document.addEventListener('DOMContentLoaded', function () {
                         checkResult(rutValue);
 
                         // Desbloquear input después de 10 seg para nuevo intento
-                        setTimeout(() => {
-                            rutInput.disabled = false;
-                            rutInput.value = '';
-                            accessLabel.textContent = 'Acércate a la cámara';
-                            decisionBox.classList.remove('success', 'error');
-                            decisionMessage.classList.remove('success', 'error');
-                            decisionMessage.textContent = '';
-                            if (cameraContainer) {
-                                cameraContainer.innerHTML = '<div class="spinner" id="camera-spinner"></div>';
-                            }
-                        }, timeout);
+                        //setTimeout(() => {
+                        //    rutInput.disabled = false;
+                        //    rutInput.value = '';
+                        //    accessLabel.textContent = 'Acércate a la cámara';
+                        //    decisionBox.classList.remove('success', 'error');
+                        //    decisionMessage.classList.remove('success', 'error');
+                        //    decisionMessage.textContent = '';
+                        //    if (cameraContainer) {
+                        //        cameraContainer.innerHTML = '<div class="spinner" id="camera-spinner"></div>';
+                        //    }
+                        //}, timeout);
                     })
                     .catch(error => {
                         console.error('❌ Error al enviar RUT:', error);

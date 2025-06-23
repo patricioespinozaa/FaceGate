@@ -65,33 +65,33 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
 
                     // Limpia input del Guardia después de unos segundos
-                    setTimeout(() => {
-                        rutInput.value = "";
-                        fotoEnviada = false;
+                    //setTimeout(() => {
+                    //    rutInput.value = "";
+                    //    fotoEnviada = false;
                         
                         // Limpiar contenedor de la foto de la DB
-                        const ucampusContainer = document.getElementById('camera-body-ucampus');
-                        if (ucampusContainer) {
-                            ucampusContainer.innerHTML = '';
-                        }
-                        if (capturedPhoto) {
-                            capturedPhoto.src = "";
-                            capturedPhoto.style.display = 'none';
-                            video.style.display = 'block';
-                        }
+                    //    const ucampusContainer = document.getElementById('camera-body-ucampus');
+                    //    if (ucampusContainer) {
+                    //        ucampusContainer.innerHTML = '';
+                    //    }
+                    //    if (capturedPhoto) {
+                    //        capturedPhoto.src = "";
+                    //        capturedPhoto.style.display = 'none';
+                    //        video.style.display = 'block';
+                    //    }
 
                         // Restaurar mensaje default
-                        const accessLabel = document.getElementById('access-label');
-                        const decisionBox = document.getElementById('decision-box');
-                        const decisionMessage = document.getElementById('decision-message');
+                    //    const accessLabel = document.getElementById('access-label');
+                    //    const decisionBox = document.getElementById('decision-box');
+                    //    const decisionMessage = document.getElementById('decision-message');
 
-                        if (accessLabel) accessLabel.textContent = "Acércate a la cámara";
-                        if (decisionBox) decisionBox.classList.remove('success', 'error');
-                        if (decisionMessage) {
-                            decisionMessage.textContent = "";
-                            decisionMessage.classList.remove('success', 'error');
-                        }
-                    }, timeout);
+                    //    if (accessLabel) accessLabel.textContent = "Acércate a la cámara";
+                    //    if (decisionBox) decisionBox.classList.remove('success', 'error');
+                    //    if (decisionMessage) {
+                    //        decisionMessage.textContent = "";
+                    //        decisionMessage.classList.remove('success', 'error');
+                    //    }
+                    //}, timeout);
                 })
                 .catch(error => {
                     console.error('❌ Error en /predict:', error);
