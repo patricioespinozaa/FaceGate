@@ -17,9 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
         decisionBox.classList.remove('success', 'error');
         decisionMessage.classList.remove('success', 'error'); 
 
-        if (cameraContainer) {
-            cameraContainer.innerHTML = '<div class="spinner" id="camera-spinner"></div>';
-        }
         // Esperar 5 s para dar tiempo a capturar foto y verificar
         await new Promise(resolve => setTimeout(resolve, delay));
 
