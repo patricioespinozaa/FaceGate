@@ -344,9 +344,15 @@
     justify-content: center;
 }
 
-@media screen and (min-width: 700px) and (max-width: 1400px) {
+.model-container-s {
+    display: flex;
+    justify-content: center;
+    margin-top: 60px;
+  }
+  
+  @media screen and (min-width: 700px) and (max-width: 1300px) {
     .student-view .model-row {
+      transform: scale(1.3);
       transform-origin: top center;
-      transform: scale(1.4);
     }
-}
+  }
