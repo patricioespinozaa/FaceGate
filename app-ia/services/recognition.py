@@ -112,10 +112,12 @@ def process_request(uploaded_image, rut: str):
     peso_recientes = 0.3
     dist_pond = peso_db * cosine_dist + peso_recientes * prom_cos_recientes
 
+    if dist_pond <= THRESHOLD - 0.05:
+         update_recientes(path_uploaded,rut)
+
     # cambiar distancia coseno -> base métricas
     if dist_pond <= THRESHOLD:
         status = 'success'
-        update_recientes(path_uploaded,rut)
         attempt_id = log_attempt(
             rut, status,
             cosine_distance=cosine_dist,
