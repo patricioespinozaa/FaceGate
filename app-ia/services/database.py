@@ -2,6 +2,7 @@ from config.settings import DB_CREDENTIALS
 import mysql.connector
 from typing import Optional, Dict, Any
 import datetime
+import time 
 
 def get_user_by_rut(rut: str) -> Optional[Dict[str, Any]]:
     """
@@ -36,6 +37,7 @@ def get_result_by_rut(rut: str) -> Optional[Dict[str, Any]]:
     
     conn = mysql.connector.connect(**DB_CREDENTIALS)
     cursor = conn.cursor(dictionary=True)
+    time.sleep(1)
     cursor.execute("""
         SELECT 
             status,
@@ -44,7 +46,7 @@ def get_result_by_rut(rut: str) -> Optional[Dict[str, Any]]:
             timestamp,
             notes
         FROM audit_log
-        WHERE rut = %s AND timestamp >= NOW() - INTERVAL 5 SECOND
+        WHERE rut = %s 
         ORDER BY timestamp DESC
         LIMIT 1
     """, (rut,))
