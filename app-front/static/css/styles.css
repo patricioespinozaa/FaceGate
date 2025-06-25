@@ -14,7 +14,7 @@
 }
 
 .welcome-container {
-    padding: 25px;
+    padding: 10px;
     font-size: 25px;
 }
 
@@ -23,7 +23,7 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-top: 10px;
+    margin-top: 0px;
 }
 
 .input-group-custom input {
@@ -95,7 +95,7 @@
 
 .main-content {
     margin-left: 25px; /* Aligns everything to match the input label */
-    padding-bottom: 50px; /* Push content down if needed */
+    padding-bottom: 30px; /* Push content down if needed */
 }
 
 .model-container {
@@ -105,7 +105,7 @@
 .model-row {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 30px;
     flex-wrap: wrap;
 }
 
@@ -190,7 +190,7 @@
     align-items: center;
     justify-content: center;
     font-size: 18px;
-    margin-top: 50px; 
+    margin-top: 10px; 
 }
 
 .model-decision.success {
