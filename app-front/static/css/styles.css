@@ -13,12 +13,25 @@
     font-family: 'IBM Plex Sans', sans-serif;
 }
 
-.welcome-container {
+.welcome-container-student {
     padding: 10px;
     font-size: 25px;
 }
 
+.welcome-container{
+    padding: 25px;
+    font-size: 25px;
+}
+
 .input-group-custom {
+    font-size: 25px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.input-group-custom-student {
     font-size: 25px;
     display: flex;
     align-items: center;
@@ -34,7 +47,19 @@
     font-size: 25px;
     width: 400px;
 }
-.input-group-custom input::placeholder {
+.input-group-custom-student input::placeholder {
+    color: #7f7f7f;
+}
+
+.input-group-custom-student input {
+    background-color: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 4px 15px;
+    font-size: 25px;
+    width: 400px;
+}
+.input-group-custom-student input::placeholder {
     color: #7f7f7f;
 }
 
@@ -92,10 +117,15 @@
     font-weight: bold;
 }
 
+.main-content-student {
+    margin-left: 25px; /* Aligns everything to match the input label */
+    padding-bottom: 30px; /* Push content down if needed */
+}
+
 
 .main-content {
     margin-left: 25px; /* Aligns everything to match the input label */
-    padding-bottom: 30px; /* Push content down if needed */
+    padding-bottom: 50px; /* Push content down if needed */
 }
 
 .model-container {
@@ -105,9 +135,10 @@
 .model-row {
     display: flex;
     align-items: center;
-    gap: 30px;
+    gap: 20px;
     flex-wrap: wrap;
 }
+
 
 .spinner {
     border: 8px solid #f3f3f3; /* Light gray */
