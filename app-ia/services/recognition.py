@@ -2,6 +2,9 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from services.database import get_user_by_rut, log_attempt
+from services.database import update_recent_embeddings_json
+from services.database import should_update_embeddings
+from services.database import insert_user_embeddings
 from models.embeddings import get_embedding
 from models.distances import cosine_distance, euclidean_distance
 from utils.file_ops import save_uploaded_image, copy_db_image_to_frontend, update_recientes, delete_uploaded_imagen, save_uploaded_image_to_frontend
@@ -55,7 +58,7 @@ def process_request(uploaded_image, rut: str):
 
     name, image_path, folder_path = user['nombre'], user['path_foto'], user['path_carpeta_recientes']
 
-    nombre_foto = copy_db_image_to_frontend(image_path)
+    nombre_foto = copy_db_image_to_frontend(image_path) # Borrar?
 
     with open(path_uploaded, 'rb') as f:
         uploaded_bytes = f.read()
@@ -83,34 +86,38 @@ def process_request(uploaded_image, rut: str):
             }
         })
 
-    with open(image_path, 'rb') as f:
-        db_bytes = f.read()
-    embedding_db = get_embedding(db_bytes)
+    # Obtener las embeddings de la db
+    from database import get_recent_embeddings_json
+    embeddings_json = get_recent_embeddings_json(rut)
 
-    euclidean_dist = euclidean_distance(embedding_uploaded, embedding_db)
-    cosine_dist = cosine_distance(embedding_uploaded, embedding_db)
+    # Embedding imagen Ucampus
+    embedding_ucampus = embeddings_json['db']
+    euclidean_dist = euclidean_distance(embedding_uploaded, embedding_ucampus)
+    cosine_dist = cosine_distance(embedding_uploaded, embedding_ucampus)
 
-    # procesamos la carpeta de recientes 
-    embeddings_recientes=[]
-    archivos = sorted(glob.glob(os.path.join(folder_path, '*')))[:5]
-    for archivo in archivos: 
-        with open(archivo, 'rb') as f:
-            imagen_bytes = f.read()
-        emb = get_embedding(imagen_bytes)
-        if emb is not None: 
-            embeddings_recientes.append(emb)    
+    # Filtrar key 'db'
+    embeddings_recientes = [
+        emb for key, emb in embeddings_json.items() if key != 'db'
+    ]
 
-    #calculamos las distancias para la carpeta recientes 
+    # Calculamos las distancias para la carpeta recientes 
     recientes_cos_dist =  [
         cosine_distance(embedding_uploaded, emb)
         for emb in embeddings_recientes
     ]
-    #promedio de las recientes
+    
+    # Promedio de las recientes
     prom_cos_recientes = sum(recientes_cos_dist) / len(recientes_cos_dist) if recientes_cos_dist else 1.0
-    #ponderacion dando mas peso a ucampus
+    
+    # Ponderacion dando mas peso a ucampus
     peso_db = 0.7
     peso_recientes = 0.3
     dist_pond = peso_db * cosine_dist + peso_recientes * prom_cos_recientes
+
+    if True:
+        updated_embeddings_json = update_recent_embeddings_json(embeddings_json, embedding_uploaded)
+        # Guardar el JSON actualizado en la base de datos
+        insert_user_embeddings(rut, embeddings_json)
 
     if dist_pond <= THRESHOLD - 0.05:
         update_recientes(path_uploaded,rut)
@@ -126,6 +133,14 @@ def process_request(uploaded_image, rut: str):
             db_image_path=nombre_foto,
             notes=f"Ponderada: {dist_pond:.4f}"
         )
+
+        # Actualización del embedding para las imagenes recientes
+        # Verificacion del día (no actualizar si ya se actualizó hoy)
+        #if should_update_embeddings(rut, embeddings_json):
+        if True:
+            updated_embeddings_json = update_recent_embeddings_json(embeddings_json, embedding_uploaded)
+            # Guardar el JSON actualizado en la base de datos
+            insert_user_embeddings(rut, embeddings_json)
     else:
         status = 'error'
         attempt_id = log_attempt(
@@ -155,5 +170,6 @@ def process_request(uploaded_image, rut: str):
         "images": {
             "uploaded_url": f"/facegate/app-front/static/uploads/{filename_uploaded}",
             "db_url": f"/facegate/app-front/static/img/{nombre_foto}"
-        }
+        },
+        "embeddings": len(updated_embeddings_json)
     })
