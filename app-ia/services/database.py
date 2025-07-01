@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from config.settings import DB_CREDENTIALS
 import mysql.connector
 from typing import Optional, Dict, Any
-import datetime
+from datetime import datetime
 import time 
 
 def get_user_by_rut(rut: str) -> Optional[Dict[str, Any]]:
@@ -219,6 +219,14 @@ if __name__ == "__main__":
 
     print(f"DB Embedding: {user_embeddings['db'][0:5]}")
     
-    # También podrías probar una actualización si lo deseas
-    # updated_embeddings = update_recent_embeddings_json(user_embeddings["embeddings"], new_embedding)
-    # print(updated_embeddings)
+    # Probar actualización de embeddings
+    new_embedding = [0.1, 0.2, 0.3, 0.4, 0.5]  
+    updated_embeddings = update_recent_embeddings_json(user_embeddings, new_embedding)
+    print(f"Updated Embeddings: {json.dumps(updated_embeddings, indent=2)}")
+    insert_user_embeddings(rut, json.dumps(updated_embeddings))
+
+    # Verificar actualizacion
+    user_embeddings = get_user_embeddings(rut)
+    print(f"Cantidad de llaves después de actualización: {len(user_embeddings)}")
+    print(f"Keys después de actualización: {list(user_embeddings.keys())}")
+    print(f"DB Embedding después de actualización: {user_embeddings['db'][0:5]}")
