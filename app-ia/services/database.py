@@ -6,6 +6,7 @@ import mysql.connector
 from typing import Optional, Dict, Any
 from datetime import datetime
 import time 
+import json
 
 def get_user_by_rut(rut: str) -> Optional[Dict[str, Any]]:
     """
@@ -206,27 +207,47 @@ def should_update_embeddings(embeddings_json: Dict[str, Any]) -> bool:
     fecha_actual = datetime.now().strftime("%d/%m/%Y")
     return fecha_actual != fecha_mas_reciente
 
-import json
+
+from models.distances import euclidean_distance, cosine_distance
 if __name__ == "__main__":
-    # Ejemplo de uso
     rut = "20918356-0"
-    
-    # Obtener embeddings para un usuario
-    user_embeddings = get_user_embeddings(rut)
+    embeddings_json = get_user_embeddings(rut)
+    embedding_ucampus = embeddings_json['db']
+    embedding_uploaded = [0.2] * 512
 
-    print(f"Cantidad de llaves: {len(user_embeddings)}")
-    print(f"Keys: {list(user_embeddings.keys())}")
+    euclidean_dist = euclidean_distance(embedding_uploaded, embedding_ucampus)
+    cosine_dist = cosine_distance(embedding_uploaded, embedding_ucampus)
+    print(f"Euclidean Distance: {euclidean_dist}")
+    print(f"Cosine Distance: {cosine_dist}")
 
-    print(f"DB Embedding: {user_embeddings['db'][0:5]}")
-    
-    # Probar actualización de embeddings
-    new_embedding = [0.1, 0.2, 0.3, 0.4, 0.5]  
-    updated_embeddings = update_recent_embeddings_json(user_embeddings, new_embedding)
-    print(f"Updated Embeddings: {json.dumps(updated_embeddings, indent=2)}")
-    insert_user_embeddings(rut, json.dumps(updated_embeddings))
+    embeddings_recientes = [
+        emb for key, emb in embeddings_json.items() if key != 'db'
+    ]
+    recientes_cos_dist = [
+        cosine_distance(embedding_uploaded, emb)
+        for emb in embeddings_recientes
+    ]
+    prom_cos_recientes = sum(recientes_cos_dist) / len(recientes_cos_dist) if recientes_cos_dist else 1.0
 
-    # Verificar actualizacion
-    user_embeddings = get_user_embeddings(rut)
-    print(f"Cantidad de llaves después de actualización: {len(user_embeddings)}")
-    print(f"Keys después de actualización: {list(user_embeddings.keys())}")
-    print(f"DB Embedding después de actualización: {user_embeddings['db'][0:5]}")
+    peso_db = 0.7
+    peso_recientes = 0.3
+    dist_pond = peso_db * cosine_dist + peso_recientes * prom_cos_recientes
+    print(f"Distancia Ponderada: {dist_pond}")
+
+    # ✅ Aquí estaba el error corregido:
+    if should_update_embeddings(embeddings_json):
+        updated_embeddings_json = update_recent_embeddings_json(embeddings_json, embedding_uploaded)
+        insert_user_embeddings(rut, json.dumps(updated_embeddings_json))
+
+    embeddings_json = get_user_embeddings(rut)
+    print(f"Embeddings JSON: {embeddings_json}")
+
+    """
+    new_embedding = {date: emb}
+    db_emb = embeddings_json.get('db', [])
+    db_json = {'db': db_emb}
+    print(f"DB EMB: {db_emb[0:5]}") 
+    print(f"New Embedding: {new_embedding[date][0:5]}...")
+    insert = update_recent_embeddings_json(db_json, new_embedding[date])
+    insert_user_embeddings(rut, json.dumps(insert))
+    """

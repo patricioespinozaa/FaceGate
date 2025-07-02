@@ -2,9 +2,12 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from services.database import get_user_by_rut, log_attempt
+
+from services.database import get_user_embeddings
 from services.database import update_recent_embeddings_json
 from services.database import should_update_embeddings
 from services.database import insert_user_embeddings
+
 from models.embeddings import get_embedding
 from models.distances import cosine_distance, euclidean_distance
 from utils.file_ops import save_uploaded_image, copy_db_image_to_frontend, update_recientes, delete_uploaded_imagen, save_uploaded_image_to_frontend
@@ -87,8 +90,7 @@ def process_request(uploaded_image, rut: str):
         })
 
     # Obtener las embeddings de la db
-    from database import get_recent_embeddings_json
-    embeddings_json = get_recent_embeddings_json(rut)
+    embeddings_json = get_user_embeddings(rut)
 
     # Embedding imagen Ucampus
     embedding_ucampus = embeddings_json['db']
@@ -114,11 +116,6 @@ def process_request(uploaded_image, rut: str):
     peso_recientes = 0.3
     dist_pond = peso_db * cosine_dist + peso_recientes * prom_cos_recientes
 
-    if True:
-        updated_embeddings_json = update_recent_embeddings_json(embeddings_json, embedding_uploaded)
-        # Guardar el JSON actualizado en la base de datos
-        insert_user_embeddings(rut, embeddings_json)
-
     if dist_pond <= THRESHOLD - 0.05:
         update_recientes(path_uploaded,rut)
 
@@ -136,11 +133,10 @@ def process_request(uploaded_image, rut: str):
 
         # Actualización del embedding para las imagenes recientes
         # Verificacion del día (no actualizar si ya se actualizó hoy)
-        #if should_update_embeddings(rut, embeddings_json):
-        if True:
+        if should_update_embeddings(embeddings_json):
             updated_embeddings_json = update_recent_embeddings_json(embeddings_json, embedding_uploaded)
             # Guardar el JSON actualizado en la base de datos
-            insert_user_embeddings(rut, embeddings_json)
+            insert_user_embeddings(rut, json.dumps(updated_embeddings_json))
     else:
         status = 'error'
         attempt_id = log_attempt(
@@ -170,6 +166,5 @@ def process_request(uploaded_image, rut: str):
         "images": {
             "uploaded_url": f"/facegate/app-front/static/uploads/{filename_uploaded}",
             "db_url": f"/facegate/app-front/static/img/{nombre_foto}"
-        },
-        "embeddings": len(updated_embeddings_json)
+        }
     })
