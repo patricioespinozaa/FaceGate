@@ -9,14 +9,14 @@ from services.database import should_update_embeddings
 from services.database import insert_user_embeddings
 
 from models.embeddings import get_embedding
-from models.distances import cosine_distance, euclidean_distance
+from models.distances import cosine_distance, euclidean_distance, tensor_to_list_dict
 from utils.file_ops import save_uploaded_image, copy_db_image_to_frontend, update_recientes, delete_uploaded_imagen, save_uploaded_image_to_frontend
 from flask import jsonify, current_app
 import glob
+import json
 
 THRESHOLD = 0.35
 #  systemctl --user restart server_app-ia
-print(f"Threshold for cosine distance set to: {THRESHOLD}", file=sys.stderr)
 
 def process_request(uploaded_image, rut: str):
     """
@@ -109,7 +109,7 @@ def process_request(uploaded_image, rut: str):
     ]
     
     # Promedio de las recientes
-    prom_cos_recientes = sum(recientes_cos_dist) / len(recientes_cos_dist) if recientes_cos_dist else 1.0
+    prom_cos_recientes = sum(recientes_cos_dist) / len(recientes_cos_dist) if recientes_cos_dist else 0
     
     # Ponderacion dando mas peso a ucampus
     peso_db = 0.7
@@ -136,7 +136,7 @@ def process_request(uploaded_image, rut: str):
         if should_update_embeddings(embeddings_json):
             updated_embeddings_json = update_recent_embeddings_json(embeddings_json, embedding_uploaded)
             # Guardar el JSON actualizado en la base de datos
-            insert_user_embeddings(rut, json.dumps(updated_embeddings_json))
+            insert_user_embeddings(rut, json.dumps(tensor_to_list_dict(updated_embeddings_json)))
     else:
         status = 'error'
         attempt_id = log_attempt(

@@ -117,10 +117,6 @@ def insert_user_embeddings(rut: str, embeddings: str) -> None:
     cursor.close()
     conn.close()
 
-import json
-from typing import Optional, Dict, Any
-import mysql.connector
-
 def get_user_embeddings(rut: str) -> Optional[Dict[str, Any]]:
     """
     Retrieves user embeddings from the database by RUT, and returns them as a parsed dictionary.
@@ -169,10 +165,16 @@ def update_recent_embeddings_json(embeddings_json: Dict[str, Any], new_embedding
     # Convertir las claves al formato datetime para ordenarlas
     fechas_ordenadas = sorted(fecha_keys, key=lambda k: datetime.strptime(k, "%d/%m/%Y"))
 
-    # Si hay 5 o más fechas, eliminar la más antigua
-    if len(fechas_ordenadas) >= 5:
+    # Si hay 5 fechas, eliminar la más antigua
+    if len(fechas_ordenadas) == 5:
         key_to_remove = fechas_ordenadas[0]
         embeddings_json.pop(key_to_remove)
+
+    # Transformar el nuevo embedding de un tensor a una lista
+    if isinstance(new_embedding, list):
+        new_embedding = [float(x) for x in new_embedding]
+    elif hasattr(new_embedding, 'tolist'):
+        new_embedding = new_embedding.tolist()
 
     # Agregar nueva fecha como clave en formato 'dd/mm/yyyy'
     nueva_fecha = datetime.now().strftime("%d/%m/%Y")
@@ -206,48 +208,3 @@ def should_update_embeddings(embeddings_json: Dict[str, Any]) -> bool:
     # Verificar si la fecha actual coincide con la más reciente
     fecha_actual = datetime.now().strftime("%d/%m/%Y")
     return fecha_actual != fecha_mas_reciente
-
-
-from models.distances import euclidean_distance, cosine_distance
-if __name__ == "__main__":
-    rut = "20918356-0"
-    embeddings_json = get_user_embeddings(rut)
-    embedding_ucampus = embeddings_json['db']
-    embedding_uploaded = [0.2] * 512
-
-    euclidean_dist = euclidean_distance(embedding_uploaded, embedding_ucampus)
-    cosine_dist = cosine_distance(embedding_uploaded, embedding_ucampus)
-    print(f"Euclidean Distance: {euclidean_dist}")
-    print(f"Cosine Distance: {cosine_dist}")
-
-    embeddings_recientes = [
-        emb for key, emb in embeddings_json.items() if key != 'db'
-    ]
-    recientes_cos_dist = [
-        cosine_distance(embedding_uploaded, emb)
-        for emb in embeddings_recientes
-    ]
-    prom_cos_recientes = sum(recientes_cos_dist) / len(recientes_cos_dist) if recientes_cos_dist else 1.0
-
-    peso_db = 0.7
-    peso_recientes = 0.3
-    dist_pond = peso_db * cosine_dist + peso_recientes * prom_cos_recientes
-    print(f"Distancia Ponderada: {dist_pond}")
-
-    # ✅ Aquí estaba el error corregido:
-    if should_update_embeddings(embeddings_json):
-        updated_embeddings_json = update_recent_embeddings_json(embeddings_json, embedding_uploaded)
-        insert_user_embeddings(rut, json.dumps(updated_embeddings_json))
-
-    embeddings_json = get_user_embeddings(rut)
-    print(f"Embeddings JSON: {embeddings_json}")
-
-    """
-    new_embedding = {date: emb}
-    db_emb = embeddings_json.get('db', [])
-    db_json = {'db': db_emb}
-    print(f"DB EMB: {db_emb[0:5]}") 
-    print(f"New Embedding: {new_embedding[date][0:5]}...")
-    insert = update_recent_embeddings_json(db_json, new_embedding[date])
-    insert_user_embeddings(rut, json.dumps(insert))
-    """

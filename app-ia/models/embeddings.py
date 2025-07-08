@@ -7,6 +7,7 @@ from PIL import Image
 from torchvision.transforms import ToPILImage
 import torch
 from models.face_model import model, mtcnn
+from services.database import insert_user_embeddings
 from typing import Optional, Dict, Any
 
 import json
@@ -56,7 +57,7 @@ def update_embeddings_in_db():
     print(f"🔍 Encontradas {len(image_files)} imágenes en {base_path}")
 
     for filename in image_files:
-        rut, _ = os.path.splitext(filename)  # Extrae el rut desde el nombre del archivo
+        rut, _ = os.path.splitext(filename)  
         image_path = os.path.join(base_path, filename)
         print(f"🔄 Procesando imagen: {filename} (RUT: {rut})")
 
@@ -77,8 +78,14 @@ def update_embeddings_in_db():
         except Exception as e:
             print(f"❌ Error al insertar embeddings para {rut}: {e}")
 
-    print("🎉 Proceso de actualización completado.")
+    print("✅ Proceso de actualización completado.")
+
 
 
 if __name__ == "__main__":
-    update_embeddings_in_db()
+    """
+    Al ejecutar el script en el servidor con 
+    'python embeddings.py', se actualizarán los embeddings 'db' de la base de datos
+    para cada entidad
+    """
+    #update_embeddings_in_db()
