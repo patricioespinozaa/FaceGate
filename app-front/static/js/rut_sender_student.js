@@ -8,11 +8,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const timeout = 20000;
     const delay = 5000;
 
+    let startTime;
+
     decisionBox.classList.remove('success', 'error');
     decisionMessage.classList.remove('success', 'error'); 
 
     // Lógica: después de enviar RUT, espera y consulta /get_result
-    async function checkResult(rut) { 
+    async function checkResult(rut,  startTime) { 
         
         decisionBox.classList.remove('success', 'error');
         decisionMessage.classList.remove('success', 'error'); 
@@ -29,7 +31,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     accessLabel.textContent = 'Aún procesando...';
                     return;
                 }
-
+                
+                
+                const endTime = performance.now();
+                const elapsed = endTime - startTime;
+                console.log(`Tiempo de respuesta total: ${elapsed.toFixed(2)} ms`);
+                
                 // Mostrar la foto capturada
                 if (cameraContainer) {
                     cameraContainer.innerHTML = ''; // Quita el spinner
@@ -83,6 +90,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 const rutValue = `${cuerpo}-${dv}`;
                 if (!rutValue) return;
 
+                startTime = performance.now();
+
                 const formData = new FormData();
                 formData.append('rut', rutValue);
 
@@ -107,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         accessLabel.textContent = 'RUT enviado. Verificando...';
 
                         // Después de guardar, consultar resultado UNA VEZ
-                        checkResult(rutValue);
+                        checkResult(rutValue, startTime);
 
                         // Desbloquear input después de 10 seg para nuevo intento
                         //setTimeout(() => {
