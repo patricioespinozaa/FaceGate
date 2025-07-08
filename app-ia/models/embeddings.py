@@ -7,7 +7,11 @@ from PIL import Image
 from torchvision.transforms import ToPILImage
 import torch
 from models.face_model import model, mtcnn
-from typing import Optional
+from services.database import insert_user_embeddings
+from typing import Optional, Dict, Any
+
+import json
+
 
 def get_embedding(image_bytes: bytes, save_path: Optional[str] = None) -> Optional[torch.Tensor]:
     """
@@ -41,3 +45,47 @@ def get_embedding(image_bytes: bytes, save_path: Optional[str] = None) -> Option
         embedding = model(face)
 
     return embedding.squeeze(0)
+
+def update_embeddings_in_db():
+    """
+    Recorre la carpeta `../../data/ucampus/`, interpreta cada archivo como una imagen 
+    nombrada con el RUT (sin extensión), genera el embedding y lo guarda en la base de datos 
+    en formato JSON bajo la columna `embeddings`.
+    """
+    base_path = os.path.join('..', '..', 'data', 'ucampus')
+    image_files = [f for f in os.listdir(base_path) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
+    print(f"🔍 Encontradas {len(image_files)} imágenes en {base_path}")
+
+    for filename in image_files:
+        rut, _ = os.path.splitext(filename)  
+        image_path = os.path.join(base_path, filename)
+        print(f"🔄 Procesando imagen: {filename} (RUT: {rut})")
+
+        with open(image_path, 'rb') as f:
+            image_bytes = f.read()
+
+        embedding = get_embedding(image_bytes)
+
+        if embedding is None:
+            print(f"🚫 No se detectó rostro en la imagen de {rut}")
+            continue
+
+        embedding_json = json.dumps({"db": embedding.tolist()})
+
+        try:
+            insert_user_embeddings(rut, embedding_json)
+            print(f"✅ Embeddings actualizados para {rut}")
+        except Exception as e:
+            print(f"❌ Error al insertar embeddings para {rut}: {e}")
+
+    print("✅ Proceso de actualización completado.")
+
+
+
+if __name__ == "__main__":
+    """
+    Al ejecutar el script en el servidor con 
+    'python embeddings.py', se actualizarán los embeddings 'db' de la base de datos
+    para cada entidad
+    """
+    #update_embeddings_in_db()

@@ -1,8 +1,12 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from config.settings import DB_CREDENTIALS
 import mysql.connector
 from typing import Optional, Dict, Any
-import datetime
+from datetime import datetime
 import time 
+import json
 
 def get_user_by_rut(rut: str) -> Optional[Dict[str, Any]]:
     """
@@ -86,3 +90,121 @@ def log_attempt(rut, status, cosine_distance=None, euclidean_distance=None,
     conn.close()
 
     return attempt_id
+
+def insert_user_embeddings(rut: str, embeddings: str) -> None:
+    """
+    Inserts or updates user embeddings in the database.
+
+    Args:
+        rut (str): The RUT (unique identifier) of the user.
+        embeddings (str): The embeddings data to be stored as a string.
+    """
+    conn = mysql.connector.connect(**DB_CREDENTIALS)
+    cursor = conn.cursor()
+
+    # Check if the user already exists
+    cursor.execute("SELECT COUNT(*) FROM ucampus WHERE rut = %s", (rut,))
+    exists = cursor.fetchone()[0] > 0
+
+    if exists:
+        # Update existing user's embeddings
+        cursor.execute("UPDATE ucampus SET embeddings = %s WHERE rut = %s", (embeddings, rut))
+    else:
+        # Insert new user with embeddings
+        cursor.execute("INSERT INTO ucampus (rut, embeddings) VALUES (%s, %s)", (rut, embeddings))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def get_user_embeddings(rut: str) -> Optional[Dict[str, Any]]:
+    """
+    Retrieves user embeddings from the database by RUT, and returns them as a parsed dictionary.
+
+    Args:
+        rut (str): The RUT (unique identifier) of the user to search for.
+
+    Returns:
+        Optional[Dict[str, Any]]: The parsed embeddings JSON as a Python dictionary if found,
+                                  otherwise None.
+    """
+    conn = mysql.connector.connect(**DB_CREDENTIALS)
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT embeddings FROM ucampus WHERE rut = %s", (rut,))
+    result = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if result and result['embeddings']:
+        try:
+            parsed_json = json.loads(result['embeddings'])
+            return parsed_json
+        except json.JSONDecodeError:
+            print(f"❌ Error al decodificar el JSON de embeddings del RUT {rut}")
+            return None
+
+    return None
+
+
+def update_recent_embeddings_json(embeddings_json: Dict[str, Any], new_embedding: list[float]) -> Dict[str, Any]:
+    """
+    Actualiza el diccionario de embeddings eliminando la fecha más antigua
+    (exceptuando la key 'db') y añadiendo una nueva entrada con la fecha actual
+    en formato 'dd/mm/yyyy'.
+
+    Args:
+        embeddings_json (Dict[str, Any]): Diccionario de embeddings actuales.
+        new_embedding (list[float]): Embedding nuevo a insertar.
+
+    Returns:
+        Dict[str, Any]: Diccionario de embeddings actualizado.
+    """
+    # Filtrar claves que son fechas (excluye 'db')
+    fecha_keys = [k for k in embeddings_json if k != "db"]
+
+    # Convertir las claves al formato datetime para ordenarlas
+    fechas_ordenadas = sorted(fecha_keys, key=lambda k: datetime.strptime(k, "%d/%m/%Y"))
+
+    # Si hay 5 fechas, eliminar la más antigua
+    if len(fechas_ordenadas) == 5:
+        key_to_remove = fechas_ordenadas[0]
+        embeddings_json.pop(key_to_remove)
+
+    # Transformar el nuevo embedding de un tensor a una lista
+    if isinstance(new_embedding, list):
+        new_embedding = [float(x) for x in new_embedding]
+    elif hasattr(new_embedding, 'tolist'):
+        new_embedding = new_embedding.tolist()
+
+    # Agregar nueva fecha como clave en formato 'dd/mm/yyyy'
+    nueva_fecha = datetime.now().strftime("%d/%m/%Y")
+    embeddings_json[nueva_fecha] = new_embedding
+
+    return embeddings_json
+
+def should_update_embeddings(embeddings_json: Dict[str, Any]) -> bool:
+    """
+    Verifica si el diccionario de embeddings tiene menos de 5 entradas.
+    Si la fecha actual coincide con la fecha más reciente, no se actualiza. -> False
+    Si la fecha actual no coincide, se actualiza el más reciente -> True
+
+    Args:
+        embeddings_json (Dict[str, Any]): Diccionario de embeddings actuales.
+
+    Returns:
+        bool: True si hay menos de 5 entradas, False en caso contrario.
+    """
+    # Filtrar claves que son fechas (excluye 'db')
+    fecha_keys = [k for k in embeddings_json if k != "db"]
+
+    # Si hay menos de 5 fechas, se debe actualizar
+    if len(fecha_keys) < 5:
+        return True
+
+    # Obtener la fecha más reciente
+    fechas_ordenadas = sorted(fecha_keys, key=lambda k: datetime.strptime(k, "%d/%m/%Y"))
+    fecha_mas_reciente = fechas_ordenadas[-1]
+
+    # Verificar si la fecha actual coincide con la más reciente
+    fecha_actual = datetime.now().strftime("%d/%m/%Y")
+    return fecha_actual != fecha_mas_reciente
