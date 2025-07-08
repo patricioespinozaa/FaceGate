@@ -14,7 +14,7 @@
 }
 
 .welcome-container-student {
-    padding: 10px;
+    padding: 10px 10px 0 10px;
     font-size: 25px;
 }
 
@@ -118,8 +118,7 @@
 }
 
 .main-content-student {
-    margin-left: 25px; /* Aligns everything to match the input label */
-    padding-bottom: 30px; /* Push content down if needed */
+    margin-left: 25px; /* Aligns everything to match the input label */ /* Push content down if needed */
 }
 
 
@@ -136,7 +135,6 @@
     display: flex;
     align-items: center;
     gap: 20px;
-    flex-wrap: wrap;
 }
 
 
@@ -220,8 +218,16 @@
     background-image: linear-gradient(to right,#afd5ff, rgb(112, 162, 255));
     align-items: center;
     justify-content: center;
+    font-size: 18px; 
+}
+
+.take-pic {
+    height: 80px;/* Match .box height */
+    display: flex;
+    background-image: linear-gradient(to right,#afd5ff, rgb(112, 162, 255));
+    align-items: center;
+    justify-content: center;
     font-size: 18px;
-    margin-top: 10px; 
 }
 
 .model-decision.success {
@@ -365,9 +371,11 @@
 
 .student-view .model-row {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    margin-top: -40px;
+    justify-content: center;
+    gap: 24px; 
+    margin-top: 0; 
 }
 
 .student-view .input-group-custom {
@@ -378,7 +386,7 @@
 .model-container-s {
     display: flex;
     justify-content: center;
-    margin-top: 60px;
+    margin-top: 30px;
   }
   
   @media screen and (min-width: 700px) and (max-width: 1300px) {
@@ -387,3 +395,14 @@
       transform-origin: top center;
     }
   }
+
+  .input-camera-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px; /* Add spacing between child elements */
+}
+.vertical-spacer {
+    height: 3px; /* Adjust as needed */
+}
