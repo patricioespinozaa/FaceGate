@@ -1,0 +1,45 @@
+document.addEventListener('DOMContentLoaded', function () {
+    const socket = io('https://grupo3.juan.cl', {
+        path: '/socket.io',
+        transports: ['websocket']
+    });
+
+    socket.on('connect', () => {
+        console.log('✅ WebSocket conectado (estudiante)');
+    });
+
+    socket.on('resultado_verificacion', (data) => {
+        const rutInput = document.getElementById('rut');
+        const decisionBox = document.getElementById('decision-box');
+        const accessLabel = document.getElementById('access-label');
+        const decisionMessage = document.getElementById('decision-message');
+        const cameraContainer = document.getElementById('camera-body-student');
+
+        const myRut = rutInput.value.replace(/[^0-9kK]/g, '');
+        const receivedRut = (data.rut || '').replace(/[^0-9kK]/g, '');
+        if (myRut !== receivedRut) return; // Ignora resultados ajenos
+
+        console.log('📨 Resultado para mí:', data);
+
+        decisionBox.classList.remove('success', 'error');
+        decisionMessage.classList.remove('success', 'error');
+
+        if (cameraContainer) {
+            cameraContainer.innerHTML = ''; // Quita el spinner
+
+            const img = document.createElement('img');
+            img.src = 'https://grupo3.juan.cl' + data.uploaded_url;
+            cameraContainer.appendChild(img);
+        }
+
+        if (data.status === 'success') {
+            decisionBox.classList.add('success');
+            accessLabel.textContent = 'ACCESO PERMITIDO';
+        } else {
+            decisionBox.classList.add('error');
+            accessLabel.textContent = 'ACCESO DENEGADO';
+            decisionMessage.textContent = data.message || 'Verificación fallida';
+            decisionMessage.classList.add('error');
+        }
+    });
+});

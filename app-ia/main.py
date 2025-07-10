@@ -4,7 +4,7 @@ from app import app
 from config.settings import PORT
 from services.recognition import process_request
 from services.database import get_result_by_rut
-
+from services.socket_events import socketio
 
 # Variable global para almacenar el último RUT
 pending_rut = None
@@ -47,4 +47,4 @@ def get_result():
     return jsonify(get_result_by_rut(rut))
 
 if __name__ == '__main__':
-    app.run(port=PORT, debug=True)
+    socketio.run(app, port=PORT, debug=True)
