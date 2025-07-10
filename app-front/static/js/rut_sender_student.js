@@ -5,13 +5,48 @@ document.addEventListener('DOMContentLoaded', function () {
     const decisionMessage = document.getElementById('decision-message');
     const capturedPhoto = document.getElementById('captured-photo');
     const cameraContainer = document.getElementById('camera-body-student');
+    const takePicBtn = document.getElementById('take-pic');
+    const videoStream = document.getElementById('video-stream-student');
     const timeout = 20000;
     const delay = 5000;
 
     let startTime;
+    let takingPhoto = false; 
 
     decisionBox.classList.remove('success', 'error');
     decisionMessage.classList.remove('success', 'error'); 
+
+    function resetUI(){
+        videoStream.style.display = 'block';
+        if(!videoStream.srcObject){
+            navigator.mediaDevices.getUserMedia({video: true})
+            .then(stream => videoStream.srcObject = stream)
+            .catch(err => console.log("no se pudo acceder a la camara", err));
+        }
+        //reset de rut 
+        rutInput.disabled = false;
+        rutInput.value = '';
+        // y de estilos 
+        decisionBox.classList.remove('success', 'error');
+        decisionMessage.classList.remove('success', 'error');
+        decisionMessage.textContent = '';
+        accessLabel.textContent = 'Acércate a la cámara';
+
+        //reset de la foto 
+        if (capturedPhoto) {
+            capturedPhoto.style.display = 'none';
+        }
+        //reset del spinner 
+        if (cameraContainer) {
+            cameraContainer.innerHTML = '';
+            cameraContainer.appendChild(videoStream);
+        }
+
+        //reset boton 
+        takePicBtn.querySelector('#take-pic-label').textContent = 'Tomar foto';
+        takingPhoto = false;
+
+    }
 
     // Lógica: después de enviar RUT, espera y consulta /get_result
     async function checkResult(rut,  startTime) { 
@@ -37,15 +72,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 const elapsed = endTime - startTime;
                 console.log(`Tiempo de respuesta total: ${elapsed.toFixed(2)} ms`);
                 
-                // Mostrar la foto capturada
-                if (cameraContainer) {
+
                     cameraContainer.innerHTML = ''; // Quita el spinner
 
-                    const img = document.createElement('img');
-                    img.src = 'https://grupo3.juan.cl' + data.uploaded_image_url;
+                const img = document.createElement('img');
+                img.src = 'https://grupo3.juan.cl' + data.uploaded_image_url;
 
-                    cameraContainer.appendChild(img);
-                }
+                cameraContainer.appendChild(img);
+                
                 // Cambiar decisionBox según resultado real
                 if (data.status === 'success') {
                     decisionBox.classList.add('success');
@@ -74,69 +108,70 @@ document.addEventListener('DOMContentLoaded', function () {
                     decisionMessage.classList.remove('success', 'error'); 
                     accessLabel.textContent = 'Verificando...';
                 }
+                //cambiar a retomar foto
+                takePicBtn.querySelector('#take-pic-label').textContent = 'Retomar foto';
+                takingPhoto = true;
             })
             .catch(error => {
                 console.error('❌ Error al obtener resultado:', error);
             });
     }
 
-    // Lógica para enviar el RUT
-    if (rutInput) {
-        rutInput.addEventListener('keydown', async function (event) {
-            if (event.key === 'Enter') {
-                let rut = rutInput.value.replace(/[^0-9kK]/g, '');
-                const cuerpo = rut.slice(0, -1);
-                const dv = rut.slice(-1).toLowerCase();
-                const rutValue = `${cuerpo}-${dv}`;
-                if (!rutValue) return;
 
-                startTime = performance.now();
+    function captureAndSend(){
+        let rut = rutInput.value.replace(/[^0-9kK]/g, '');
+        const cuerpo = rut.slice(0, -1);
+        const dv = rut.slice(-1).toLowerCase();
+        const rutValue = `${cuerpo}-${dv}`;
+        if (!rutValue) return;
 
-                const formData = new FormData();
-                formData.append('rut', rutValue);
+        startTime = performance.now();
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = videoStream.videoWidth;
+        canvas.height = videoStream.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(videoStream, 0, 0, canvas.width, canvas.height);
 
-                fetch('https://grupo3.juan.cl/facegate/app-ia/store_rut', {
-                    method: 'POST',
-                    body: formData
+        canvas.toBlob(blob => {
+            const formData= new FormData();
+            formData.append('rut', rutValue);
+            formData.append('photo', blob, 'photo.jpg');
+            fetch('https://grupo3.juan.cl/facegate/app-ia/store_rut', {
+                method: 'POST',
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log('✅ RUT guardado:', data);
+                    rutInput.disabled = true;
+                    
+                    // Quitamos ultima foto
+                    
+                    if (cameraContainer) {
+                        cameraContainer.innerHTML = '<div class="spinner" id="camera-spinner"></div>';
+                    }
+                                    // Cambia el decision box a estado "En proceso"
+                    decisionBox.classList.remove('success', 'error');
+                    decisionMessage.classList.remove('success', 'error'); 
+                    accessLabel.textContent = 'RUT enviado. Verificando...';
+
+                    // Después de guardar, consultar resultado UNA VEZ
+                    checkResult(rutValue, startTime);
                 })
-                    .then(res => res.json())
-                    .then(data => {
-                        console.log('✅ RUT guardado:', data);
-                        rutInput.disabled = true;
-                        
-                        // Quitamos ultima foto
-                        
-                        if (cameraContainer) {
-                            cameraContainer.innerHTML = '<div class="spinner" id="camera-spinner"></div>';
-                        }
-
-                        // Cambia el decision box a estado "En proceso"
-                        decisionBox.classList.remove('success', 'error');
-                        decisionMessage.classList.remove('success', 'error'); 
-                        accessLabel.textContent = 'RUT enviado. Verificando...';
-
-                        // Después de guardar, consultar resultado UNA VEZ
-                        checkResult(rutValue, startTime);
-
-                        // Desbloquear input después de 10 seg para nuevo intento
-                        //setTimeout(() => {
-                        //    rutInput.disabled = false;
-                        //    rutInput.value = '';
-                        //    accessLabel.textContent = 'Acércate a la cámara';
-                        //    decisionBox.classList.remove('success', 'error');
-                        //    decisionMessage.classList.remove('success', 'error');
-                        //    decisionMessage.textContent = '';
-                        //    if (cameraContainer) {
-                        //        cameraContainer.innerHTML = '<div class="spinner" id="camera-spinner"></div>';
-                        //    }
-                        //}, timeout);
-                    })
-                    .catch(error => {
-                        console.error('❌ Error al enviar RUT:', error);
-                        decisionBox.classList.add('error');
-                        accessLabel.textContent = 'Error al enviar tu RUT. Intenta de nuevo.';
-                    });
-            }
-        });
+                .catch(error => {
+                    console.error('❌ Error al enviar RUT:', error);
+                    decisionBox.classList.add('error');
+                    accessLabel.textContent = 'Error al enviar tu RUT. Intenta de nuevo.';
+                });
+            
+        }, 'image/jpeg');            
     }
+    takePicBtn.addEventListener('click', function (){
+        if(!takingPhoto){
+            captureAndSend();
+        } else{
+            resetUI();
+        }
+    })
 });
