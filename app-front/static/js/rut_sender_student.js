@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const cameraContainer = document.getElementById('camera-body-student');
     const takePicBtn = document.getElementById('take-pic');
     const videoStream = document.getElementById('video-stream-student');
+    const rutErrorMessage = document.getElementById('rut-error-message');
+
     const timeout = 20000;
     const delay = 5000;
 
@@ -36,6 +38,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (capturedPhoto) {
             capturedPhoto.style.display = 'none';
         }
+        rutErrorMessage.textContent = '';
+        rutErrorMessage.classList.remove('error');
+        rutErrorMessage.style.visibility = 'hidden';        
         //reset del stream
         if (cameraContainer) {
             cameraContainer.innerHTML = '';
@@ -185,9 +190,25 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     takePicBtn.addEventListener('click', function (){
         if(!takingPhoto){
+            const rawRut = rutInput.value.trim();
+            if (!rawRut) {
+                rutErrorMessage.textContent = "Ingresa tu RUT antes de tomarte la foto";
+                rutErrorMessage.classList.add('error');
+                rutErrorMessage.style.visibility = 'visible';
+                return;
+            }
+            rutErrorMessage.textContent = '';
+            rutErrorMessage.classList.remove('error');
             captureAndSend();
         } else{
             resetUI();
         }
     })
+    
+    rutInput.addEventListener('input', () => {
+        rutErrorMessage.textContent = '';
+        rutErrorMessage.classList.remove('error');
+        rutErrorMessage.style.visibility = 'hidden';
+    });
+    
 });
