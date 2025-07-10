@@ -36,10 +36,26 @@ document.addEventListener('DOMContentLoaded', function () {
         if (capturedPhoto) {
             capturedPhoto.style.display = 'none';
         }
-        //reset del spinner 
+        //reset del stream
         if (cameraContainer) {
             cameraContainer.innerHTML = '';
-            cameraContainer.appendChild(videoStream);
+        
+            //crear nuevo stream
+            const newVideo = document.createElement('video');
+            newVideo.setAttribute('autoplay', true);
+            newVideo.setAttribute('id', 'video-stream-student');
+            newVideo.style.width = '100%';
+        
+            
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    newVideo.srcObject = stream;
+                })
+                .catch(err => {
+                    console.error('Error al acceder a la cámara:', err);
+                });
+        
+            cameraContainer.appendChild(newVideo);
         }
 
         //reset boton 
