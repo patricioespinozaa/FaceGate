@@ -1,5 +1,6 @@
 # evaluation.py
 import os
+import time
 import random
 import argparse
 from contextlib import redirect_stdout
@@ -44,6 +45,17 @@ def main() -> None:
     # En la segunda iteracion, se comprueba la imagen de la carpeta con el rut correspondiente (el rut del nombre de la carpeta)
     # En la tercera iteracion, se comprueba la imagen de la carpeta con el resto de ruts.
     # El funcionamiento es, para las imagenes de una carpeta, se prueba si se autoriza el acceso o no con cada uno de los ruts.
+    start_time = time.time()
+    image_count = sum(len(os.listdir(os.path.join(EVAL_DIR, rut))) for rut in all_ruts)
+    print(f"Evaluating {len(all_ruts)} RUTs with a total of {image_count} images...")
+
+    spoof_cases = {
+        ("21095757-k", "21166885-7"),
+        ("20918356-0", "19891604-8"),
+        ("20918356-0", "20625224-3"),
+        ("19891604-8", "20625224-3"),
+        ("20625224-3", "21166885-7")
+    }
     for real_rut in tqdm(all_ruts, desc="🔎 Evaluating RUTs"): 
         # Extract the real RUT folder path
         real_path = os.path.join(EVAL_DIR, real_rut)
@@ -57,15 +69,32 @@ def main() -> None:
             # Cases: TP, FN
             evaluate_image(image_path, claimed_rut=real_rut, real_rut=real_rut)
 
-            # Evaluate the image with a random different RUT (spoofing case)
-            # Cases: TN, FP 
-            suplantadores = [r for r in all_ruts if r != real_rut]
-            with tqdm(suplantadores, desc=f"🕵️ Probando {image_name}", leave=False) as pbar:
-                for fake_rut in pbar:
-                    pbar.set_postfix({'Suplantador': fake_rut})
-                    print(f"Evaluated {image_name} with claimed RUT '{fake_rut}' against real RUT '{real_rut}'.") #NOTE: Al descomentarlo se guardará en el txt resultante (permite observar en que imagen falla)
-                    evaluate_image(image_path, claimed_rut=fake_rut, real_rut=real_rut)
+    # Evaluate the image with a different RUT (spoofing case)
+    # Cases: TN, FP 
 
+    spoof_image_count = 0
+    print("\nEvaluando casos de suplantación específicos...")
+    for attacker_rut, claimed_rut in tqdm(spoof_cases, desc="🕵️ Casos de suplantación"):
+        attacker_path = os.path.join(EVAL_DIR, attacker_rut)
+        if not os.path.exists(attacker_path):
+            print(f"[Advertencia] Carpeta no encontrada para suplantador: {attacker_rut}")
+            continue
+
+        image_files = sorted(os.listdir(attacker_path))[:25]  # Limita a 25
+        for image_name in tqdm(image_files, desc=f"{attacker_rut} -> {claimed_rut}", leave=False):
+            image_path = os.path.join(attacker_path, image_name)
+            evaluate_image(image_path, claimed_rut=claimed_rut, real_rut=attacker_rut)
+            spoof_image_count += 1
+
+    total_images = image_count + spoof_image_count
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    avg_time_per_image = elapsed_time / total_images if total_images > 0 else 0
+
+    print("\n=== ⏱️ TIEMPO DE EJECUCIÓN ===")
+    print(f"Total de imágenes evaluadas: {total_images}")
+    print(f"Tiempo total: {elapsed_time:.2f} segundos")
+    print(f"Tiempo promedio por imagen: {avg_time_per_image:.2f} segundos")
     report_metrics()
 
 if __name__ == "__main__":
