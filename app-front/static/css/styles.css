@@ -407,3 +407,40 @@
 .vertical-spacer {
     height: 3px; /* Adjust as needed */
 }
+
+.keyboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 320px;
+    margin: 20px auto;
+    padding: 10px;
+}
+  
+.keyboard button {
+    height: 60px;
+    font-size: 1.3em;
+    border-radius: 10px;
+    border: none;
+    background-color: #e0ecff;
+    cursor: pointer;
+}
+  
+.keyboard button:hover {
+    background-image: linear-gradient(to right, #afd5ff, rgb(112, 162, 255));
+}
+
+.keyboard .backspace {
+    grid-column: span 3;
+    height: 60px;
+    font-size: 1.3em;
+    border-radius: 10px;
+    border: none;
+    background-color: #e0ecff;
+    cursor: pointer;
+}
+  
+.keyboard .backspace:hover {
+    background-image: linear-gradient(to right, #afd5ff, rgb(112, 162, 255));
+}
+  
