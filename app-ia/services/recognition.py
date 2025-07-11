@@ -15,7 +15,7 @@ from flask import jsonify, current_app
 import glob
 import json
 
-THRESHOLD = 0.15
+THRESHOLD = 0.45
 #  systemctl --user restart server_app-ia
 
 def process_request(uploaded_image, rut: str):
