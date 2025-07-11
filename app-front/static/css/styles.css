@@ -387,6 +387,7 @@
       transform-origin: top center;
     }
   }
+
 .face-guide-overlay {
     position: absolute;
     top: 50%;
@@ -396,19 +397,6 @@
     transform: translate(-50%, -50%);
     border: 2px dashed rgba(255, 255, 255, 0.8);
     border-radius: 50%;
-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.2);
     pointer-events: none;
 }
-/* 
-.face-guide-overlay {
-    position: absolute;
-    top: 60%;
-    left: 50%;
-    width: 400px;
-    transform: translate(-50%, -50%);
-    opacity: 1;
-    pointer-events: none;
-    z-index: 3;
-  }
-*/
-  
