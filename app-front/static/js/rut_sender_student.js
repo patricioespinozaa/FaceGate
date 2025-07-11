@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(stream => videoStream.srcObject = stream)
             .catch(err => console.log("no se pudo acceder a la camara", err));
         }
+        fetch('https://grupo3.juan.cl/facegate/app-ia/reset_guard_view', {
+            method: 'POST'
+        });
         //reset de rut 
         rutInput.disabled = false;
         rutInput.value = '';
@@ -204,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function () {
             resetUI();
         }
     })
-    
+
     rutInput.addEventListener('input', () => {
         rutErrorMessage.textContent = '';
         rutErrorMessage.classList.remove('error');
