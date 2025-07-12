@@ -64,8 +64,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         
             cameraContainer.appendChild(newVideo);
+            const faceGuide = document.createElement('div');
+            faceGuide.className = 'face-guide-overlay';
+            cameraContainer.appendChild(faceGuide);
         }
-
+        
         //reset boton 
         takePicBtn.querySelector('#take-pic-label').textContent = 'Tomar foto';
         takingPhoto = false;

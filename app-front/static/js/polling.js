@@ -26,6 +26,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                     video.style.display = 'block';
                 }
+                //reset overlay 
+                const cameraContainer = document.getElementById('camera-body-camara');
+                const faceGuide = document.createElement('div');
+                const videoElement = cameraContainer.querySelector('#video-stream');
+                faceGuide.className = 'face-guide-overlay';
+                cameraContainer.insertBefore(faceGuide, videoElement);
 
                 //reset spinner
                 const ucampusContainer = document.getElementById('camera-body-ucampus');
