@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const capturedPhoto = document.getElementById('captured-photo');
     const cameraContainer = document.getElementById('camera-body-student');
     const timeout = 20000;
-    const delay = 5000;
+    const delay = 500;
 
     let startTime;
 
@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
         decisionBox.classList.remove('success', 'error');
         decisionMessage.classList.remove('success', 'error'); 
 
+        await new Promise(resolve => setTimeout(resolve, delay));
 
         fetch(`https://grupo3.juan.cl/facegate/app-ia/get_result?rut=${rut}`)
             .then(res => res.json())
