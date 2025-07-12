@@ -56,6 +56,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         capturedPhoto.src = 'https://grupo3.juan.cl' + data.images.uploaded_url;
                         capturedPhoto.style.display = 'block';
                         video.style.display = 'none';
+                        document.querySelectorAll('.face-guide-overlay').forEach(el => {
+                            el.style.display = 'none';
+                        });
                     }
 
                     if (data.status === 'success') {
