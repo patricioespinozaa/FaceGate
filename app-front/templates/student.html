@@ -7,33 +7,36 @@
         <div>¡Bienvenid@!</div>
         <div> Por favor digita tu RUT y toma la foto.</div>
     </div>
-    <div class="keyboard">
-        <button onclick="addDigit('1')">1</button>
-        <button onclick="addDigit('2')">2</button>
-        <button onclick="addDigit('3')">3</button>
-        <button onclick="addDigit('4')">4</button>
-        <button onclick="addDigit('5')">5</button>
-        <button onclick="addDigit('6')">6</button>
-        <button onclick="addDigit('7')">7</button>
-        <button onclick="addDigit('8')">8</button>
-        <button onclick="addDigit('9')">9</button>
-        <button onclick="addDigit('0')">0</button>
-        <button onclick="addDigit('K')">K</button>
-        <button onclick="addDigit('-')">-</button>
-        <button class="backspace" onclick="removeDigit()">←</button>
-    </div>
-
-
-
     <div class="main-content-student">
         <div class="model-container-s">
             <div class="model-row">
-                <div class="input-camera-column">
+                <div class="keyboard-column">
                     <!--Ingresar Rut -->
                     <div id="rut-error-message" class="decision-message"></div>
                     <div class="input-group-custom-student">
-                        <input type="text" id="rut" style="width: 300px" placeholder="12345678-9">
+                        <input type="text" id="rut" style="width: 300px;" placeholder="12345678-9">
                     </div>
+                    <div class="keyboard">
+                        <button onclick="addDigit('1')">1</button>
+                        <button onclick="addDigit('2')">2</button>
+                        <button onclick="addDigit('3')">3</button>
+                        <button onclick="addDigit('4')">4</button>
+                        <button onclick="addDigit('5')">5</button>
+                        <button onclick="addDigit('6')">6</button>
+                        <button onclick="addDigit('7')">7</button>
+                        <button onclick="addDigit('8')">8</button>
+                        <button onclick="addDigit('9')">9</button>
+                        <button onclick="addDigit('0')">0</button>
+                        <button onclick="addDigit('K')">K</button>
+                        <button onclick="addDigit('-')">-</button>
+                        <button class="backspace" onclick="removeDigit()">borrar</button>
+                    </div>
+                </div>
+                <!-- Flecha -->
+                <div class="arrow">
+                    <span>→</span>
+                </div> 
+                <div class="input-camera-column">
                     <!-- Cámara -->
                     <div class="box">
                         <div class="box-header">
@@ -46,7 +49,6 @@
                             </div>
                         </div>
                     </div>
-
 
                     <div class="box take-pic" id="take-pic">
                         <div id="take-pic-label">Tomar foto</div>
