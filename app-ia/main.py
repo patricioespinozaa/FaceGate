@@ -1,9 +1,11 @@
 import os
+from PIL import Image
 from flask import request, jsonify, send_file
 from app import app
 from config.settings import PORT
 from services.recognition import process_request
 from services.database import get_result_by_rut
+import io
 
 
 # Variable global para almacenar el último RUT
@@ -11,10 +13,29 @@ pending_rut = None
 
 @app.route('/facegate/app-ia/predict', methods=['POST'])
 def predict():
+    
     rut = request.form.get('rut')
     uploaded_image = request.files.get('imagen')
     if uploaded_image is None:
         return jsonify({"status": "error", "message": "No image received"})
+
+        # Open the uploaded image with Pillow
+    image = Image.open(uploaded_image)
+
+        # Convert to RGB (important if input is grayscale or RGBA)
+    #image = image.convert("RGB")
+
+        # Resize the image (you can adjust size to your model's needs)
+    #image = image.resize((300, 300))  # Example size
+
+        # Save the image to a BytesIO stream with compression
+    #img_io = io.BytesIO()
+    #image.save(img_io, format='JPEG', quality=70, optimize=True)
+    #img_io.seek(0)
+    #img_io.name = "compressed.jpg"  # Optional: helps if process_request uses filename
+
+        # Pass the optimized image to your processing function
+    #response = process_request(img_io, rut)
 
     response = process_request(uploaded_image, rut)
 
