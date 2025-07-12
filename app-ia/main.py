@@ -4,6 +4,7 @@ from app import app
 from config.settings import PORT
 from services.recognition import process_request
 from services.database import get_result_by_rut
+import time
 
 
 # Variable global para almacenar el último RUT
@@ -43,6 +44,17 @@ def get_result():
     rut = request.args.get('rut')
     if not rut:
         return jsonify({"status": "error", "message": "No RUT provided"}), 400
+
+    timeout = 20  # segundos
+    interval = 0.5  # chequear cada 0.5 segundos
+    elapsed = 0
+
+    while elapsed < timeout:
+        result = get_result_by_rut(rut)
+        if result.get("status") != "pending":
+            return jsonify(result)
+        time.sleep(interval)
+        elapsed += interval
 
     return jsonify(get_result_by_rut(rut))
 

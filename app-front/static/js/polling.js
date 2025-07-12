@@ -132,5 +132,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Iniciar polling loop
-    setInterval(poll, pollingInterval);
+    (async function loopPolling() {
+        await poll();
+        setTimeout(loopPolling, 100); // loop controlado, cada 100 ms intenta de nuevo
+    })();
 });

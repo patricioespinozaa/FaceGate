@@ -19,8 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
         decisionBox.classList.remove('success', 'error');
         decisionMessage.classList.remove('success', 'error'); 
 
-        // Esperar 5 s para dar tiempo a capturar foto y verificar
-        await new Promise(resolve => setTimeout(resolve, delay));
 
         fetch(`https://grupo3.juan.cl/facegate/app-ia/get_result?rut=${rut}`)
             .then(res => res.json())
@@ -29,6 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (data.status === 'pending') {
                     accessLabel.textContent = 'Aún procesando...';
+                    // Reintenta después de 500 ms
+                    setTimeout(() => checkResult(rut, startTime), 500);
                     return;
                 }
                 
