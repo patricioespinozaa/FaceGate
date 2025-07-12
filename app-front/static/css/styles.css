@@ -394,13 +394,12 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 16px; /* Add spacing between child elements */
+    gap: 16px;
     margin-top: 75px;
 }
 .vertical-spacer {
     height: 3px; /* Adjust as needed */
 }
-
 .keyboard {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -413,10 +412,11 @@
     height: 64px;
     width: 100%;
     font-size: 1.3em;
-    border-radius: 10px;
-    border: none;
+    border: 1px solid #ccc;
+    border-radius: 12px;
     background-color: #e0ecff;
     cursor: pointer;
+    font-weight: bold;
 }
   
 .keyboard button:hover {
@@ -427,11 +427,12 @@
     grid-column: span 3;
     height: 80px;
     font-size: 1.3em;
-    border-radius: 10px;
-    border: none;
+    border: 1px solid #ccc;
+    border-radius: 12px;
     background-color: #e0ecff;
     cursor: pointer;
     margin-top: 10px;
+    font-weight: bold;
 }
   
 .keyboard .backspace:hover {

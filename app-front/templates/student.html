@@ -29,7 +29,7 @@
                         <button onclick="addDigit('0')">0</button>
                         <button onclick="addDigit('K')">K</button>
                         <button onclick="addDigit('-')">-</button>
-                        <button class="backspace" onclick="removeDigit()">borrar</button>
+                        <button class="backspace" onclick="removeDigit()">Borrar</button>
                     </div>
                 </div>
                 <!-- Flecha -->
@@ -76,4 +76,5 @@
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/rut_sender_student.js') }}"></script>
 <script src="{{ url_for('static', filename='js/camara_student.js') }}"></script>
+<script src="{{ url_for('static', filename='js/keyboard.js') }}"></script>
 {% endblock %}
