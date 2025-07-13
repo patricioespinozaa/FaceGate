@@ -5,6 +5,22 @@ from config.settings import PORT
 from services.recognition import process_request
 from services.database import get_result_by_rut
 
+reset_guard_flag = False 
+
+@app.route('/facegate/app-ia/reset_guard_view', methods=['POST'])
+def reset_guard_view():
+    global reset_guard_flag
+    reset_guard_flag = True
+    return jsonify({"status": "ok"})
+
+@app.route('/facegate/app-ia/should_reset_guard', methods=['GET'])
+def should_reset_guard():
+    global reset_guard_flag
+    if reset_guard_flag:
+        reset_guard_flag = False
+        return jsonify({"reset": True})
+    return jsonify({"reset": False})
+
 # Variable global para almacenar el último RUT
 pending_rut = None
 
@@ -45,6 +61,8 @@ def get_result():
         return jsonify({"status": "error", "message": "No RUT provided"}), 400
 
     return jsonify(get_result_by_rut(rut))
+
+    
 
 if __name__ == '__main__':
     app.run(port=PORT, debug=True)

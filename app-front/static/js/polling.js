@@ -7,6 +7,53 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function poll() {
         try {
+            const resetResponse = await fetch('https://grupo3.juan.cl/facegate/app-ia/should_reset_guard');
+            const resetData = await resetResponse.json();
+
+            if (resetData.reset) {
+                console.log('🔄 Reiniciando interfaz del guardia...');
+
+                //reset rut 
+                rutInput.value = '';
+                fotoEnviada = false;
+
+                //reset stream
+                if (video) {
+                    const capturedPhoto = document.getElementById('captured-photo');
+                    if (capturedPhoto) {
+                        capturedPhoto.src = '';
+                        capturedPhoto.style.display = 'none';
+                    }
+                    video.style.display = 'block';
+                }
+                //reset overlay 
+                const cameraContainer = document.getElementById('camera-body-camara');
+                const faceGuide = document.createElement('div');
+                const videoElement = cameraContainer.querySelector('#video-stream');
+                faceGuide.className = 'face-guide-overlay';
+                cameraContainer.insertBefore(faceGuide, videoElement);
+
+                //reset spinner
+                const ucampusContainer = document.getElementById('camera-body-ucampus');
+                if (ucampusContainer) {
+                    ucampusContainer.innerHTML = '<div class="spinner" id="camera-spinner"></div>';
+                }
+
+                //reset mensaje decision
+                const accessLabel = document.getElementById('access-label');
+                const decisionBox = document.getElementById('decision-box');
+                const decisionMessage = document.getElementById('decision-message');
+
+                if (accessLabel) accessLabel.textContent = "Espera la respuesta";
+                if (decisionBox) decisionBox.classList.remove('success', 'error');
+                if (decisionMessage) {
+                    decisionMessage.textContent = "";
+                    decisionMessage.classList.remove('success', 'error');
+                }
+
+                return; 
+            }
+
             // Pedir el último RUT pendiente:
             const response = await fetch('https://grupo3.juan.cl/facegate/app-ia/get_last_rut');
             const result = await response.json();
