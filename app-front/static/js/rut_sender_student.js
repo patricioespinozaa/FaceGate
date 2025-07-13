@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const decisionBox = document.getElementById('decision-box');
     const accessLabel = document.getElementById('access-label');
     const decisionMessage = document.getElementById('decision-message');
-    const capturedPhoto = document.getElementById('captured-photo');
     const cameraContainer = document.getElementById('camera-body-student');
 
     decisionBox.classList.remove('success', 'error');
@@ -27,9 +26,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 decisionBox.classList.remove('success', 'error');
                 decisionMessage.classList.remove('success', 'error');
                 accessLabel.textContent = 'RUT enviado. Verificando...';
-                if (cameraContainer) {
-                    cameraContainer.innerHTML = '<div class="spinner" id="camera-spinner"></div>';
-                }
 
                 try {
                     const storeResponse = await fetch('https://grupo3.juan.cl/facegate/app-ia/store_rut', {
@@ -54,6 +50,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     canvas.toBlob((blob) => {
                         if (!blob) return;
+
+                        if (video.srcObject) {
+                            video.srcObject.getTracks().forEach(track => track.stop());
+                        }
+
+                        if (cameraContainer) {
+                            cameraContainer.innerHTML = '<div class="spinner" id="camera-spinner"></div>';
+                        }
 
                         const formDataImg = new FormData();
                         formDataImg.append('rut', rutValue);

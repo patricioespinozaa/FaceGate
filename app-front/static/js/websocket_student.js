@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('✅ WebSocket conectado (estudiante)');
     });
 
+    socket.onAny((event, ...args) => {
+        console.log('[WS] Evento recibido:', event, args);
+    });
+
     socket.on('resultado_verificacion', (data) => {
         const rutInput = document.getElementById('rut');
         const decisionBox = document.getElementById('decision-box');
