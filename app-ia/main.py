@@ -10,6 +10,22 @@ from services.database import get_result_by_rut
 from services.socket_events import socketio
 
 socketio.init_app(app)
+reset_guard_flag = False
+
+@app.route('/facegate/app-ia/reset_guard_view', methods=['POST'])
+def reset_guard_view():
+    global reset_guard_flag
+    reset_guard_flag = True
+    return jsonify({"status": "ok"})
+
+@app.route('/facegate/app-ia/should_reset_guard', methods=['GET'])
+def should_reset_guard():
+    global reset_guard_flag
+    if reset_guard_flag:
+        reset_guard_flag = False
+        return jsonify({"reset": True})
+    return jsonify({"reset": False})
+
 # Variable global para almacenar el último RUT
 pending_rut = None
 
