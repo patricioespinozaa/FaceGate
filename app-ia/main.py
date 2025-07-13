@@ -1,4 +1,7 @@
 import os
+import eventlet
+eventlet.monkey_patch()
+
 from flask import request, jsonify, send_file
 from app import app
 from config.settings import PORT
@@ -6,6 +9,7 @@ from services.recognition import process_request
 from services.database import get_result_by_rut
 from services.socket_events import socketio
 
+socketio.init_app(app)
 # Variable global para almacenar el último RUT
 pending_rut = None
 
