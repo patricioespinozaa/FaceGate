@@ -12,6 +12,8 @@ from models.embeddings import get_embedding
 from models.distances import cosine_distance, euclidean_distance, tensor_to_list_dict
 from utils.file_ops import save_uploaded_image, copy_db_image_to_frontend, update_recientes, delete_uploaded_imagen, save_uploaded_image_to_frontend
 from flask import jsonify, current_app
+from PIL import Image
+import io
 import glob
 import json
 
@@ -59,13 +61,28 @@ def process_request(uploaded_image, rut: str):
 
         })
 
+    uploaded_image.seek(0)
+    img_data = uploaded_image.read()
+
+    img = Image.open(io.BytesIO(img_data))
+
+    MAX_SIZE = 300
+
+    width, height = img.size
+    if max(width, height) > MAX_SIZE:
+        ratio = MAX_SIZE / max(width, height)
+        new_size = (int(width * ratio), int(height * ratio))
+        img = img.resize(new_size, Image.LANCZOS)
+
+    img_buffer = io.BytesIO()
+    img.save(img_buffer, format='JPEG', quality=90)
+    optimized_bytes = img_buffer.getvalue()
+
+    embedding_uploaded = get_embedding(optimized_bytes)
+
     name, image_path, folder_path = user['nombre'], user['path_foto'], user['path_carpeta_recientes']
 
     nombre_foto = copy_db_image_to_frontend(image_path) # Borrar?
-
-    with open(path_uploaded, 'rb') as f:
-        uploaded_bytes = f.read()
-    embedding_uploaded = get_embedding(uploaded_bytes)
 
     if embedding_uploaded is None:
         attempt_id = log_attempt(

@@ -113,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const videoWidth = video.videoWidth;
             const videoHeight = video.videoHeight;
             const squareSize = Math.min(videoWidth, videoHeight);
+
             const finalWidth = squareSize + 10;
             const finalHeight = squareSize;
             const cropX = (videoWidth - finalWidth) / 2;
@@ -123,14 +124,10 @@ document.addEventListener('DOMContentLoaded', function () {
             canvas.height = finalHeight;
 
             canvas.getContext('2d').drawImage(video, cropX, cropY, finalWidth, finalHeight, 0, 0, finalWidth, finalHeight);
-            canvas.toBlob(function (blob) {
-                if (!blob) {
-                    console.error("❌ No se pudo crear el blob de la imagen");
-                    resolve(null);
-                } else {
-                    resolve(blob);
-                }
-            }, 'image/jpeg');
+
+            canvas.toBlob(blob => {
+                blob ? resolve(blob) : resolve(null);
+            }, 'image/jpeg', 0.5);
         });
     }
 
