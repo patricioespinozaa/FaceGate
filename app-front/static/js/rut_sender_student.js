@@ -131,4 +131,9 @@ document.addEventListener('DOMContentLoaded', function () {
             takePicBtn.click();
         }
     });
+
+    document.addEventListener('verificacion-finalizada', () => {
+        takePicBtn.querySelector('#take-pic-label').textContent = 'Retomar foto';
+        takingPhoto = true;
+    });
 });

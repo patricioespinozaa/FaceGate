@@ -45,5 +45,6 @@ document.addEventListener('DOMContentLoaded', function () {
             decisionMessage.textContent = data.message || 'Verificación fallida';
             decisionMessage.classList.add('error');
         }
+        document.dispatchEvent(new Event('verificacion-finalizada'));
     });
 });
