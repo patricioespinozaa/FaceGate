@@ -65,7 +65,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            rutInput.value = rut;
+            function formatRut(rut) {
+                rut = rut.replace(/[^0-9kK]/g, '').toUpperCase(); 
+                if (rut.length <= 1) return rut;
+
+                const body = rut.slice(0, -1);
+                const dv = rut.slice(-1);
+                let formatted = '';
+
+                for (let i = 0; i < body.length; i++) {
+                    if (i > 0 && (body.length - i) % 3 === 0) {
+                        formatted += '.';
+                    }
+                    formatted += body[i];
+                }
+
+                return `${formatted}-${dv}`;
+            }
+
+            rutInput.value = formatRut(rut);
 
             // Si ya envió foto para este RUT, no la vuelva a enviar:
             if (fotoEnviada) return;
