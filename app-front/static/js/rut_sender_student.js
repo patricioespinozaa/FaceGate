@@ -14,13 +14,32 @@ document.addEventListener('DOMContentLoaded', function () {
     decisionBox.classList.remove('success', 'error');
     decisionMessage.classList.remove('success', 'error');
 
-    function resetUI() {
+    function formatRut(rut) {
+        rut = rut.replace(/[^0-9kK]/g, '').toUpperCase();
+        if (rut.length <= 1) return rut;
+
+        const body = rut.slice(0, -1);
+        const dv = rut.slice(-1);
+        let formatted = '';
+
+        for (let i = 0; i < body.length; i++) {
+            if (i > 0 && (body.length - i) % 3 === 0) {
+                formatted += '.';
+            }
+            formatted += body[i];
+        }
+
+        return `${formatted}-${dv}`;
+    }
+
+
+    function resetUI(){
         videoStream.style.display = 'block';
         const faceGuide = document.createElement('div');
         const videoElement = cameraContainer.querySelector('#video-stream')
         faceGuide.className = 'face-guide-overlay';
         cameraContainer.insertBefore(faceGuide,videoElement)
-        
+
         if (videoStream.paused) {
             videoStream.play().catch(err => console.warn("No se pudo reanudar el stream:", err));
         }
@@ -33,16 +52,19 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('https://grupo3.juan.cl/facegate/app-ia/reset_guard_view', {
             method: 'POST'
         });
-
+        //reset de rut
         rutInput.disabled = false;
         rutInput.value = '';
+        // y de estilos 
         decisionBox.classList.remove('success', 'error');
         decisionMessage.classList.remove('success', 'error');
         decisionMessage.textContent = '';
         accessLabel.textContent = 'Acércate a la cámara';
 
-        if (capturedPhoto) capturedPhoto.style.display = 'none';
-
+        //reset de la foto 
+        if (capturedPhoto) {
+            capturedPhoto.style.display = 'none';
+        }
         rutErrorMessage.textContent = '';
         rutErrorMessage.classList.remove('error');
         rutErrorMessage.style.visibility = 'hidden';
@@ -90,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         spinner.className = 'spinner';
                         cameraContainer.appendChild(spinner);
                     }
-
+                    // Cambia el decision box a estado "En proceso"
                     decisionBox.classList.remove('success', 'error');
                     decisionMessage.classList.remove('success', 'error');
                     accessLabel.textContent = 'RUT enviado. Verificando...';
@@ -120,10 +142,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    rutInput.addEventListener('input', () => {
+    rutInput.addEventListener('input', function (e) {
         rutErrorMessage.textContent = '';
         rutErrorMessage.classList.remove('error');
         rutErrorMessage.style.visibility = 'hidden';
+
+        const raw = rutInput.value.replace(/[^0-9kK]/g, '');
+        const formatted = formatRut(raw);
+        rutInput.value = formatted;
+        rutInput.setSelectionRange(formatted.length, formatted.length);
     });
 
     rutInput.addEventListener('keydown', function (event) {
