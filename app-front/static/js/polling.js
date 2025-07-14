@@ -26,6 +26,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                     video.style.display = 'block';
                 }
+                //reset overlay 
+                const cameraContainer = document.getElementById('camera-body-camara');
+                const faceGuide = document.createElement('div');
+                const videoElement = cameraContainer.querySelector('#video-stream');
+                faceGuide.className = 'face-guide-overlay';
+                cameraContainer.insertBefore(faceGuide, videoElement);
 
                 //reset spinner
                 const ucampusContainer = document.getElementById('camera-body-ucampus');
@@ -97,6 +103,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         capturedPhoto.src = 'https://grupo3.juan.cl' + data.images.uploaded_url;
                         capturedPhoto.style.display = 'block';
                         video.style.display = 'none';
+                        document.querySelectorAll('.face-guide-overlay').forEach(el => {
+                            el.style.display = 'none';
+                        });
                     }
 
                     if (data.status === 'success') {
