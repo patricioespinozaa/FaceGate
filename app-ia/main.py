@@ -1,11 +1,16 @@
 import os
+import eventlet
+eventlet.monkey_patch()
+
 from flask import request, jsonify, send_file
 from app import app
 from config.settings import PORT
 from services.recognition import process_request
 from services.database import get_result_by_rut
+from services.socket_events import socketio
 
-reset_guard_flag = False 
+socketio.init_app(app)
+reset_guard_flag = False
 
 @app.route('/facegate/app-ia/reset_guard_view', methods=['POST'])
 def reset_guard_view():
@@ -56,12 +61,11 @@ def get_last_rut():
 @app.route('/facegate/app-ia/get_result', methods=['GET'])
 def get_result():
     rut = request.args.get('rut')
+    rut = str(rut).lower()
     if not rut:
         return jsonify({"status": "error", "message": "No RUT provided"}), 400
 
     return jsonify(get_result_by_rut(rut))
 
-    
-
 if __name__ == '__main__':
-    app.run(port=PORT, debug=True)
+    socketio.run(app, port=PORT, debug=True)

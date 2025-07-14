@@ -1,16 +1,52 @@
 document.addEventListener('DOMContentLoaded', function () {
     const videoStream = document.getElementById('video-stream');
-    if(navigator.mediaDevices.getUserMedia){
-        navigator.mediaDevices.getUserMedia({video: true})
-        .then(function (stream) {
-            videoStream.srcObject = stream;
-        })
-        .catch (function (error) {
-            console.log("Error ");
-        })
-    } else{
-        console.log("no se dio el permiso");
-    }
+    const socket = io();
+    const peer = new RTCPeerConnection();
+
+    // 1. Captura de cámara local
+    navigator.mediaDevices.getUserMedia({ video: true, audio: false }).then(stream => {
+        videoStream.srcObject = stream;
+
+        // 2. Añadir pistas a la conexión WebRTC
+        stream.getTracks().forEach(track => peer.addTrack(track, stream));
+
+        // 3. Crear y enviar oferta WebRTC
+        return peer.createOffer();
+    }).then(offer => {
+        return peer.setLocalDescription(offer).then(() => {
+            socket.emit('offer', { sdp: offer });
+        });
+    }).catch(error => {
+        console.error("❌ Error al capturar cámara o crear oferta:", error);
+    });
+
+    // 4. Responder a 'answer' del estudiante
+    const pendingCandidates = [];
+
+    socket.on('answer', async ({ sdp }) => {
+        try {
+            await peer.setRemoteDescription(new RTCSessionDescription(sdp));
+
+            // Procesar candidatos almacenados
+            for (const candidate of pendingCandidates) {
+                await peer.addIceCandidate(new RTCIceCandidate(candidate));
+            }
+            pendingCandidates.length = 0;
+        } catch (err) {
+            console.error("❌ Error al setear remoteDescription (answer):", err);
+        }
+    });
+
+    socket.on('ice-candidate', ({ candidate }) => {
+        if (peer.remoteDescription && peer.remoteDescription.type === 'answer') {
+            peer.addIceCandidate(new RTCIceCandidate(candidate)).catch(e => {
+                console.error("❌ ICE candidate inválido:", e);
+            });
+        } else {
+            pendingCandidates.push(candidate);
+        }
+    });
+
 });
 
 //Boton de captura

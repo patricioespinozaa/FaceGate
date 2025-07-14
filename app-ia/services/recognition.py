@@ -7,6 +7,7 @@ from services.database import get_user_embeddings
 from services.database import update_recent_embeddings_json
 from services.database import should_update_embeddings
 from services.database import insert_user_embeddings
+from services.socket_events import emitir_resultado
 
 from models.embeddings import get_embedding
 from models.distances import cosine_distance, euclidean_distance, tensor_to_list_dict
@@ -48,6 +49,14 @@ def process_request(uploaded_image, rut: str):
                                  'error',
                                  uploaded_image_path=f"uploads/{filename_uploaded}",
                                  notes="Rut no encontrado")
+        emitir_resultado({
+            "rut": rut,
+            "nombre": None,
+            "status": "error",
+            "message": "Rut no encontrado",
+            "uploaded_url": f"/facegate/app-front/static/uploads/{filename_uploaded}",
+            "db_url": "/facegate/app-front/static/img/plain.png"
+        })
         return jsonify({
             "status": "error",
             "attempt_id": attempt_id,
@@ -74,6 +83,14 @@ def process_request(uploaded_image, rut: str):
             db_image_path=nombre_foto,
             notes="Rostro no detectado"
         )
+        emitir_resultado({
+            "rut": rut,
+            "nombre": name,
+            "status": "error",
+            "message": "Rostro no detectado",
+            "uploaded_url": f"/facegate/app-front/static/uploads/{filename_uploaded}",
+            "db_url": f"/facegate/app-front/static/img/{nombre_foto}"
+        })
         #delete_uploaded_imagen(path_uploaded)
         return jsonify({
             "status": "error",
@@ -149,7 +166,16 @@ def process_request(uploaded_image, rut: str):
     )
         
     # en todos los casos borramos
-    #delete_uploaded_imagen(path_uploaded) 
+    #delete_uploaded_imagen(path_uploaded)
+
+    emitir_resultado({
+        "rut": rut,
+        "nombre": name,
+        "status": status,
+        "message": "Acceso permitido" if status == 'success' else "Acceso denegado",
+        "uploaded_url": f"/facegate/app-front/static/uploads/{filename_uploaded}",
+        "db_url": f"/facegate/app-front/static/img/{nombre_foto}"
+    })
 
     return jsonify({
         "status": "success" if dist_pond <= THRESHOLD else "error",
