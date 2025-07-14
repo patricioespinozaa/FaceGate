@@ -240,7 +240,7 @@
 
 .decision-message {
     margin-top: 8px;
-    font-size: 16px;
+    font-size: 15px;
     text-align: center;
     border: 2px solid;
     border-radius: 20px;
@@ -398,7 +398,7 @@
     margin-top: 75px;
 }
 .vertical-spacer {
-    height: 3px; /* Adjust as needed */
+    height: 20px; /* Adjust as needed */
 }
 .keyboard {
     display: grid;
@@ -431,7 +431,7 @@
     border-radius: 12px;
     background-color: #e0ecff;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 14px;
     font-weight: bold;
 }
   
@@ -440,7 +440,7 @@
 }
   
 .keyboard-column{
-    margin-top: 30px;
+    margin-top: 13px;
 }
 
 .face-guide-overlay {
