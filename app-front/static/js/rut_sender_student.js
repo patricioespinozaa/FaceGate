@@ -16,11 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function resetUI() {
         videoStream.style.display = 'block';
-        if (!videoStream.srcObject) {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => videoStream.srcObject = stream)
-                .catch(err => console.log("no se pudo acceder a la camara", err));
-        }
+        cameraContainer.appendChild(videoStream)
 
         fetch('https://grupo3.juan.cl/facegate/app-ia/reset_guard_view', {
             method: 'POST'
@@ -40,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
         rutErrorMessage.style.visibility = 'hidden';
 
         if (!videoStream.srcObject) {
+            console.log("entro al if")
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then(stream => {
                     videoStream.srcObject = stream;
