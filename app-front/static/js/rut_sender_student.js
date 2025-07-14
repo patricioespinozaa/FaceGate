@@ -39,21 +39,13 @@ document.addEventListener('DOMContentLoaded', function () {
         rutErrorMessage.classList.remove('error');
         rutErrorMessage.style.visibility = 'hidden';
 
-        if (cameraContainer) {
-            cameraContainer.innerHTML = '';
-            const newVideo = document.createElement('video');
-            newVideo.setAttribute('autoplay', true);
-            newVideo.setAttribute('id', 'video-stream-student');
-            newVideo.style.width = '100%';
-
+        if (!videoStream.srcObject) {
             navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => newVideo.srcObject = stream)
+                .then(stream => {
+                    videoStream.srcObject = stream;
+                    videoStream.style.display = 'block';
+                })
                 .catch(err => console.error('Error al acceder a la cámara:', err));
-
-            cameraContainer.appendChild(newVideo);
-            const faceGuide = document.createElement('div');
-            faceGuide.className = 'face-guide-overlay';
-            cameraContainer.appendChild(faceGuide);
         }
 
         takePicBtn.querySelector('#take-pic-label').textContent = 'Tomar foto';
