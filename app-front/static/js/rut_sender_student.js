@@ -18,6 +18,25 @@ document.addEventListener('DOMContentLoaded', function () {
     decisionBox.classList.remove('success', 'error');
     decisionMessage.classList.remove('success', 'error'); 
 
+    function formatRut(rut) {
+        rut = rut.replace(/[^0-9kK]/g, '').toUpperCase(); 
+        if (rut.length <= 1) return rut;
+
+        const body = rut.slice(0, -1);
+        const dv = rut.slice(-1);
+        let formatted = '';
+
+        for (let i = 0; i < body.length; i++) {
+            if (i > 0 && (body.length - i) % 3 === 0) {
+                formatted += '.';
+            }
+            formatted += body[i];
+        }
+
+        return `${formatted}-${dv}`;
+    }
+
+
     function resetUI(){
         videoStream.style.display = 'block';
         if(!videoStream.srcObject){
@@ -211,10 +230,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     })
 
-    rutInput.addEventListener('input', () => {
+    rutInput.addEventListener('input', function (e) {
         rutErrorMessage.textContent = '';
         rutErrorMessage.classList.remove('error');
         rutErrorMessage.style.visibility = 'hidden';
+
+        const raw = rutInput.value.replace(/[^0-9kK]/g, '');
+        const formatted = formatRut(raw);
+        rutInput.value = formatted;
+        rutInput.setSelectionRange(formatted.length, formatted.length);
     });
+
     
 });
