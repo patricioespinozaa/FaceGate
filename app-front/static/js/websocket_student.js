@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const accessLabel = document.getElementById('access-label');
         const decisionMessage = document.getElementById('decision-message');
         const cameraContainer = document.getElementById('camera-body-student');
+        const video = document.getElementById('video-stream-student');
 
         const myRut = rutInput.value.replace(/[^0-9kK]/g, '');
         const receivedRut = (data.rut || '').replace(/[^0-9kK]/g, '');
@@ -28,8 +29,23 @@ document.addEventListener('DOMContentLoaded', function () {
         decisionBox.classList.remove('success', 'error');
         decisionMessage.classList.remove('success', 'error');
 
+
+        if (video) {
+            video.style.display = 'none';
+        }  
+         // Eliminar imagen anterior si existe
+        const prevImg = cameraContainer.querySelector('img');
+        if (prevImg) prevImg.remove();
+
         if (cameraContainer) {
-            cameraContainer.innerHTML = ''; // Quita el spinner
+            
+            // Ocultar overlay
+            const overlay = cameraContainer.querySelector('.face-guide-overlay');
+            if (overlay) overlay.remove();
+
+            // Ocultar o eliminar spinner
+            const spinner = document.getElementById('camera-spinner');
+            if (spinner) spinner.remove();
 
             const img = document.createElement('img');
             img.src = 'https://grupo3.juan.cl' + data.uploaded_url;

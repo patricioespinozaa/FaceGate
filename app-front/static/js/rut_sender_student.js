@@ -16,7 +16,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function resetUI() {
         videoStream.style.display = 'block';
-        cameraContainer.appendChild(videoStream)
+        const faceGuide = document.createElement('div');
+        const videoElement = cameraContainer.querySelector('#video-stream')
+        faceGuide.className = 'face-guide-overlay';
+        cameraContainer.insertBefore(faceGuide,videoElement)
+        
+        if (videoStream.paused) {
+            videoStream.play().catch(err => console.warn("No se pudo reanudar el stream:", err));
+        }
+
+        const img = cameraContainer.querySelector('img');
+        if (img) img.remove();
+        const spinner = document.getElementById('camera-spinner');
+        if (spinner) spinner.remove();
 
         fetch('https://grupo3.juan.cl/facegate/app-ia/reset_guard_view', {
             method: 'POST'
@@ -34,16 +46,6 @@ document.addEventListener('DOMContentLoaded', function () {
         rutErrorMessage.textContent = '';
         rutErrorMessage.classList.remove('error');
         rutErrorMessage.style.visibility = 'hidden';
-
-        if (!videoStream.srcObject) {
-            console.log("entro al if")
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => {
-                    videoStream.srcObject = stream;
-                    videoStream.style.display = 'block';
-                })
-                .catch(err => console.error('Error al acceder a la cámara:', err));
-        }
 
         takePicBtn.querySelector('#take-pic-label').textContent = 'Tomar foto';
         takingPhoto = false;
@@ -76,8 +78,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log('✅ RUT guardado:', data);
                     rutInput.disabled = true;
 
-                    if (cameraContainer) {
-                        cameraContainer.innerHTML = '<div class="spinner" id="camera-spinner"></div>';
+                    videoStream.style.display = 'none';
+
+                    const existingImg = cameraContainer.querySelector('img');
+                    if (existingImg) existingImg.remove();
+
+                    const existingSpinner = document.getElementById('camera-spinner');
+                    if (!existingSpinner) {
+                        const spinner = document.createElement('div');
+                        spinner.id = 'camera-spinner';
+                        spinner.className = 'spinner';
+                        cameraContainer.appendChild(spinner);
                     }
 
                     decisionBox.classList.remove('success', 'error');
