@@ -113,6 +113,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         cameraContainer.appendChild(spinner);
                     }
                     // Cambia el decision box a estado "En proceso"
+                    // Ocultar overlay
+                    const overlay = cameraContainer.querySelector('.face-guide-overlay');
+                    if (overlay) overlay.remove();
                     decisionBox.classList.remove('success', 'error');
                     decisionMessage.classList.remove('success', 'error');
                     accessLabel.textContent = 'RUT enviado. Verificando...';

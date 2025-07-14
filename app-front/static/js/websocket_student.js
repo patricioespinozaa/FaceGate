@@ -20,15 +20,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const cameraContainer = document.getElementById('camera-body-student');
         const video = document.getElementById('video-stream-student');
 
-        const myRut = rutInput.value.replace(/[^0-9kK]/g, '');
-        const receivedRut = (data.rut || '').replace(/[^0-9kK]/g, '');
+        const myRut = rutInput.value.replace(/[^0-9kK]/g, '').toLowerCase();
+        const receivedRut = (data.rut || '').replace(/[^0-9kK]/g, '').toLowerCase();
         if (myRut !== receivedRut) return; // Ignora resultados ajenos
 
         console.log('📨 Resultado para mí:', data);
 
         decisionBox.classList.remove('success', 'error');
         decisionMessage.classList.remove('success', 'error');
-
 
         if (video) {
             video.style.display = 'none';

@@ -61,6 +61,7 @@ def get_last_rut():
 @app.route('/facegate/app-ia/get_result', methods=['GET'])
 def get_result():
     rut = request.args.get('rut')
+    rut = str(rut).lower()
     if not rut:
         return jsonify({"status": "error", "message": "No RUT provided"}), 400
 

@@ -3,7 +3,7 @@
 {% block content %}
 <div class="student-view">
     <!-- Welcome -->
-    <div class="welcome-container-student" style="font-size: 28px;">
+    <div class="welcome-container-student" style="font-size:22px;">
         <div>¡Bienvenid@ estudiante!</div>
         <div> Por favor digita tu RUT y toma la foto.</div>
     </div>
@@ -16,7 +16,7 @@
                     <div class="vertical-spacer"></div>
                     <div class="input-group-custom-student">
 
-                        <input type="text" id="rut" style="width: 300px" placeholder="12.345.678-9">
+                        <input type="text" id="rut" style="width: 300px" placeholder="12.345.678-9" readonly>
 
                     </div>
                     <div class="keyboard">
@@ -83,6 +83,6 @@
 <script src="{{ url_for('static', filename='js/rut_sender_student.js') }}"></script>
 <script src="{{ url_for('static', filename='js/camara_student.js') }}"></script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script src="{{ url_for('static', filename='js/websocket_student.js') }}"></script>
 <script src="{{ url_for('static', filename='js/keyboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/websocket_student.js') }}"></script>
 {% endblock %}

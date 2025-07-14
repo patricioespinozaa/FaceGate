@@ -84,7 +84,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             rutInput.value = formatRut(rut);
-
             // Si ya envió foto para este RUT, no la vuelva a enviar:
             if (fotoEnviada) return;
             fotoEnviada = true;

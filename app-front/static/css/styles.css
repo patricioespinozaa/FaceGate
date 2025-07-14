@@ -384,7 +384,7 @@
   
   @media screen and (min-width: 700px) and (max-width: 1300px) {
     .student-view .model-row {
-      transform: scale(1.3);
+      transform: scale(0.8);
       transform-origin: top center;
     }
   }
