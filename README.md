@@ -120,11 +120,11 @@ El sistema cuenta con dos vistas principales:
 ![Vista Estudiante](img/vista_estudiante.png)
 
 ### Mensajes de resultado:
-- TP: ![TP](img/TP.png)
-- TN: ![TTN](img/TN.png)
-- FN: ![FN](img/FN.png)
-- FP (0.40): ![FP](img/FP_040.png)
-- FP (0.35): ![FP](img/FP_035.png)
+- Verdaderos Positivos: ![TP](img/TP.png)
+- Verdaderos Negativos: ![TTN](img/TN.png)
+- Falsos Negativos: ![FN](img/FN.png)
+- Falsos Positivos con umbral de 0.40: ![FP](img/FP_040.png)
+- Falsos Positivos con umbral de 0.35: ![FP](img/FP_035.png)
 
 ---
 
