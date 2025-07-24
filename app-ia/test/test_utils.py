@@ -7,8 +7,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils import get_embedding, cosine_distance, euclidean_distance
 
 # Image paths
-img1_path: str = 'test/src/20918356-0.jpg'
-img2_path: str = 'test/src/Foto_Patricio.jpg'
+img1_path: str = ''
+img2_path: str = ''
 
 # Read images as bytes
 img1_bytes: bytes = Path(img1_path).read_bytes()
